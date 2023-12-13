@@ -1,1 +1,1 @@
-export type GeneratorFunction = Generator<any, any, any>;
+export type GeneratorFunction = Generator<any, any, any>

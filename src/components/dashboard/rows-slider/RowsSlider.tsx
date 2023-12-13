@@ -1,25 +1,26 @@
-import React from 'react';
-import Slider from 'react-slick';
-import { useDispatch } from 'react-redux';
-import { ReactComponent as Corporate } from '../../../assets/icons/corporate.svg';
-import { ReactComponent as Prev } from '../../../assets/icons/prevArrow.svg';
-import { ReactComponent as Next } from '../../../assets/icons/nextArrow.svg';
-import { openContactCard, openGroupChat } from '../../../redux/actions/dashboard';
-import { DashboardItem } from '../../../types/types';
-import { SECTION_TYPE, SLIDER_ROWS_COUNT } from '../../../constants/constants';
-import { getInitials } from '../../../helpers';
-import './RowsSlider.scss';
+import React from 'react'
+import Slider from 'react-slick'
+import { useDispatch } from 'react-redux'
+import classNames from 'classnames'
+import { ReactComponent as Corporate } from '../../../assets/icons/corporate.svg'
+import { ReactComponent as Prev } from '../../../assets/icons/prev-arrow.svg'
+import { ReactComponent as Next } from '../../../assets/icons/next-arrow.svg'
+import Avatar from '../../avatar/Avatar'
+import { openContactCard, openGroupChat } from '../../../redux/actions/dashboard'
+import { DashboardItem } from '../../../types/types'
+import { SECTION_TYPE, SLIDER_ROWS_COUNT } from '../../../constants/constants'
+import './RowsSlider.scss'
 
 interface RowsSliderProps {
-  type: string;
-  items: DashboardItem[];
+  type: string
+  items: DashboardItem[]
 }
 
-const NextArrow = ({ className, style, onClick }: any) => <Next className={className} style={{ ...style }} onClick={onClick} />;
-const PrevArrow = ({ className, style, onClick }: any) => <Prev className={className} style={{ ...style }} onClick={onClick} />;
+const NextArrow = ({ className, style, onClick }: any) => <Next className={className} style={{ ...style }} onClick={onClick} />
+const PrevArrow = ({ className, style, onClick }: any) => <Prev className={className} style={{ ...style }} onClick={onClick} />
 
 const RowsSlider = ({ type, items  }: RowsSliderProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
   const sliderSettings = {
     dots: true,
@@ -43,18 +44,25 @@ const RowsSlider = ({ type, items  }: RowsSliderProps) => {
         }
       },
     ],
-  };
+  }
 
   const handleItemClick = (id: string) => {
-    type === SECTION_TYPE.chats ? dispatch(openGroupChat(id)) : dispatch(openContactCard(id));
-  };
+    type === SECTION_TYPE.chats ? dispatch(openGroupChat(id)) : dispatch(openContactCard(id))
+  }
+
+  const isLastItem = (itemIndex: number) => itemIndex === items.length - 1
 
   return (
     <Slider {...sliderSettings} className="slider rows-slider">
-      {items.map(({ id, name, description, avatar }) => (
+      {items.map(({ id, name, description, avatar }, index) => (
         <div key={id} className="rows-slider__item" onClick={() => handleItemClick(id)}>
-          {avatar? <img src={avatar} alt="" /> : <div className='avatar'>{getInitials(name)[0]}</div>}
-          <div className="rows-slider__item--info">
+          <Avatar avatarSrc={avatar} itemType={type} itemName={name} />
+          <div
+            className={classNames({
+              'rows-slider__item--info': true,
+              'rows-slider__item--info__is-last': isLastItem(index),
+            })}
+          >
             <div className="rows-slider__item--name">
               <Corporate />
               <h4>{name}</h4>
@@ -64,7 +72,7 @@ const RowsSlider = ({ type, items  }: RowsSliderProps) => {
         </div>
       ))}
     </Slider>
-  );
-};
+  )
+}
 
-export default RowsSlider;
+export default RowsSlider

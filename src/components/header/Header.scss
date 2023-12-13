@@ -1,23 +1,19 @@
 @import '../../constants/constants';
 
+.smartapp-header {
+  width: calc(100vw - 32px) !important;
+  background: $white-color;
+  padding: 16px;
+}
+
 .header {
-  font-size: 16px;
+  font-size: 24px;
   font-weight: 700;
   background: $white-color;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 16px;
-
-  &__big-text-size {
-    font-size: 24px;
-  }
-
-  &__title {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
 
   &__additional-icons {
     display: flex;

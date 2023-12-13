@@ -1,6 +1,6 @@
-import { createHashHistory } from 'history';
+import { createHashHistory } from 'history'
 
 // Create history singleton
-const history = createHashHistory();
+const history = createHashHistory()
 
-export default history;
+export default history

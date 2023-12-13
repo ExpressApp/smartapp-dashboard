@@ -1,33 +1,28 @@
-import React from 'react';
-import classNames from 'classnames';
-import { useDispatch } from 'react-redux';
-import { ReactComponent as Service } from '../../../assets/icons/service.svg';
-import { ReactComponent as Corporate } from '../../../assets/icons/corporate.svg';
-import { ReactComponent as Plus } from '../../../assets/icons/plus.svg';
-import { ReactComponent as Delete } from '../../../assets/icons/delete.svg';
-import { addItemToDashboard, removeItemFromDashboard } from '../../../redux/actions/dashboard';
-import { SECTION_TYPE } from '../../../constants/constants';
-import { DashboardItem } from '../../../types/types';
-import { getInitials } from '../../../helpers';
-import './ResultsList.scss';
+import React from 'react'
+import classNames from 'classnames'
+import { useDispatch } from 'react-redux'
+import { ReactComponent as Corporate } from '../../../assets/icons/corporate.svg'
+import { ReactComponent as Plus } from '../../../assets/icons/plus.svg'
+import { ReactComponent as Delete } from '../../../assets/icons/delete.svg'
+import Avatar from '../../avatar/Avatar'
+import { addItemToDashboard, removeItemFromDashboard } from '../../../redux/actions/dashboard'
+import { AVATAR_SIZE, SECTION_TYPE } from '../../../constants/constants'
+import { DashboardItem } from '../../../types/types'
+import './ResultsList.scss'
 
 interface ResultsListProps {
-  type: string;
-  items: DashboardItem[];
+  type: string
+  items: DashboardItem[]
 }
 
 const ResultsList = ({ type, items }: ResultsListProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
   return (
     <div className="results-list">
       {items.map(item => (
         <div key={item.id} className="results-list__item">
-          {item.avatar ? (
-            <img src={item.avatar} alt="" />
-          ) : (
-            type === SECTION_TYPE.services ? <Service /> : <div className='avatar avatar__small'>{getInitials(item.name)[0]}</div>
-          )}
+          <Avatar avatarSrc={item.avatar} itemType={type} itemName={item.name} size={AVATAR_SIZE.small} />
           {type === SECTION_TYPE.services ? (
             <div className="results-list__item--name">{item.name}</div>
           ) : (
@@ -56,7 +51,7 @@ const ResultsList = ({ type, items }: ResultsListProps) => {
         </div>
       ))}
     </div>
-  );
-};
+  )
+}
 
-export default ResultsList;
+export default ResultsList

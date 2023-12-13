@@ -15,6 +15,7 @@
     &--name {
       font-weight: 400;
       font-size: 14px;
+      word-break: break-word;
     }
 
     &--description {
@@ -30,6 +31,8 @@
       gap: 8px;
 
       svg {
+        min-width: 12px !important;
+        min-height: 12px !important;
         margin-top: 3px;
 
         &:hover {
@@ -46,24 +49,18 @@
       }
     }
 
-    svg:first-of-type, img {
-      width: 32px;
-      height: 32px;
-    }
-
-    img {
-      border-radius: 50%;
-    }
-
     svg:last-of-type {
-      width: auto;
-      height: auto;
-      border-radius: unset;
+      min-width: 19px;
+      min-height: 19px;
       margin-left: auto;
 
       &:hover {
         cursor: pointer;
       }
+    }
+
+    .smartapp-avatar {
+      min-width: 32px;
     }
   }
 

@@ -1,8 +1,8 @@
 {
   "extends": ["react-app"],
   "rules": {
-    "semi": [2, "never"],
-    "max-len": ["error", 150, { "ignoreStrings": true }],
+    "semi": ["error", "never"],
+    "max-len": ["error", 150, { "ignoreStrings": true }]
   },
   "plugins": ["@typescript-eslint"]
 }

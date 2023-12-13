@@ -1,18 +1,18 @@
-import React from 'react';
-import Slider from 'react-slick';
-import { useDispatch } from 'react-redux';
-import { ReactComponent as Service } from '../../../assets/icons/service.svg';
-import { openSmartApp } from '../../../redux/actions/dashboard';
-import { DashboardItem } from '../../../types/types';
-import { SLIDES_TO_SHOW_EXPANDED, SLIDES_TO_SHOW_COLLAPSED } from '../../../constants/constants';
-import './SimpleSlider.scss';
+import React from 'react'
+import Slider from 'react-slick'
+import { useDispatch } from 'react-redux'
+import Avatar from '../../avatar/Avatar'
+import { openSmartApp } from '../../../redux/actions/dashboard'
+import { DashboardItem } from '../../../types/types'
+import { SLIDES_TO_SHOW_EXPANDED, SLIDES_TO_SHOW_COLLAPSED, SECTION_TYPE } from '../../../constants/constants'
+import './SimpleSlider.scss'
 
 interface SimpleSliderProps {
-  items: DashboardItem[];
+  items: DashboardItem[]
 }
 
 const SimpleSlider = ({ items }: SimpleSliderProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
   const sliderSettings = {
     arrows: false,
@@ -34,18 +34,18 @@ const SimpleSlider = ({ items }: SimpleSliderProps) => {
         }
       },
     ]
-  };
+  }
 
   return (
     <Slider {...sliderSettings} className="slider simple-slider">
       {items.map(({ id, appId, name, avatar }) => (
         <div key={id} className="simple-slider__item" onClick={() => dispatch(openSmartApp(appId as string))}>
-          {avatar? <img src={avatar} alt="avatar" /> : <Service />}
+          <Avatar avatarSrc={avatar} itemType={SECTION_TYPE.services} />
           <h5>{name}</h5>
         </div>
       ))}
     </Slider>
-  );
-};
+  )
+}
 
-export default SimpleSlider;
+export default SimpleSlider

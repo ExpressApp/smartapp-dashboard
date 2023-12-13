@@ -1,14 +1,14 @@
-export const MAX_SECTION_ITEMS: number = 9;
-export const SLIDER_ROWS_COUNT: number = 3;
-export const SLIDES_TO_SHOW_COLLAPSED: number = 3;
-export const SLIDES_TO_SHOW_EXPANDED: number = 6;
+export const MAX_SECTION_ITEMS: number = 9
+export const SLIDER_ROWS_COUNT: number = 3
+export const SLIDES_TO_SHOW_COLLAPSED: number = 3
+export const SLIDES_TO_SHOW_EXPANDED: number = 6
 
-export const STATUS_OK = 'ok';
-export const STATUS_SUCCESS = 'success';
+export const STATUS_OK = 'ok'
+export const STATUS_SUCCESS = 'success'
 
-export enum TEXT_SIZE {
-  small ='small',
-  big = 'big',
+export enum AVATAR_SIZE {
+  small = 'small',
+  normal = 'normal',
 }
 
 export enum SECTION_TYPE {
@@ -41,4 +41,6 @@ export enum METHODS {
   postDashboard = 'dashboard.post',
   deleteDashboard = 'dashboard.delete',
   patchDashboardOrdering = 'dashboard_ordering.patch',
+  backPressed = 'back_pressed',
+  cleanCache = 'clean_cache',
 }

@@ -5,16 +5,9 @@
   background: $lighter-gray-color;
   padding: 16px 16px 8px 16px;
 
-  input {
-    width: calc(100vw - 66px);
-    border: 1px solid $dark-gray-color;
-    border-radius: 8px;
-    padding: 16px;
-
-    &:focus {
-      border: 1px solid $blue-color;
-      outline: none;
-    }
+  input:focus {
+    border: 1px solid $blue-color;
+    outline: none;
   }
 
   &__help-text {
@@ -24,15 +17,12 @@
     margin: 4px 0 0 16px;
   }
 
-  &__clear-icon {
-    cursor: pointer;
-  }
-
   svg {
     position: absolute;
     right: 33px;
-    top: 33px;
+    top: 30px;
     width: 16px;
     height: 16px;
+    cursor: pointer;
   }
 }

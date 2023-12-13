@@ -1,20 +1,21 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
-import App from './components/App';
-import MainLoader from './components/main-loader/MainLoader';
-import history from './redux/router';
-import { configureStore } from './redux/configureStore';
-import './styles/index.scss';
-
-const store = configureStore();
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { Provider } from 'react-redux'
+import { PersistGate } from 'redux-persist/integration/react'
+import App from './components/App'
+import MainLoader from './components/main-loader/MainLoader'
+import history from './redux/router'
+import { store, persistor } from './helpers'
+import './styles/index.scss'
 
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
-      <App history={history} />
-      <MainLoader />
+      <PersistGate loading={null} persistor={persistor}>
+        <App history={history} />
+        <MainLoader />
+      </PersistGate>
     </Provider>
   </React.StrictMode>,
   document.getElementById('root')
-);
+)

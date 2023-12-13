@@ -43,18 +43,16 @@
       flex-direction: column;
       border-bottom: 0.5px solid $dark-gray-color;
       padding-bottom: 8px;
+
+      &__is-last {
+        border-bottom: none;
+      }
     }
 
     &--name {
       display: flex;
       gap: 8px;
       align-items: center;
-    }
-
-    img {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
     }
   }
 

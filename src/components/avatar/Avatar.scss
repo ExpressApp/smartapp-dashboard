@@ -1,0 +1,16 @@
+.avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+
+  &__service {
+    width: 80px;
+    height: 80px;
+    border-radius: 23px;
+  }
+
+  &__small {
+    width: 32px;
+    height: 32px;
+  }
+}
