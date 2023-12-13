@@ -12,7 +12,6 @@
 
 В дашборде имеется возможность поиска и сортировки сущностей. Сортировка реализована через drag-and-drop. Приложение реализуется под мобильные устройства и десктоп.
 
-****Макет в [Figma](https://www.figma.com/file/ayRR0lRYepdx1drxSYEDeL/%5BSmartApp-eXpress%5D-%D0%9B%D0%B8%D1%87%D0%BD%D1%8B%D0%B9-%D0%B4%D0%B0%D1%88%D0%B1%D0%BE%D1%80%D0%B4?node-id=0%3A1&mode=dev).****
 ****Описание [API](https://confluence.ccsteam.ru/display/EI/%5BTest%5D+SmartApp).****
 ****Стек технологий:**** TS+React+React-Router+Redux+Saga+react-beautiful-dnd+react-slick+reactjs-popup.
 
@@ -73,7 +72,4 @@ Bot Huid&SmartApp ID: c069df87-a345-5a42-8b4f-289927f97577.
 Для взаимодействия в Smartapp SDK существуют методы: openGroupChat, openContactCard, openSmartApp.  Каждый из этих методов принимает объект, в котором находится ID элемента.
 Для чатов это - groupChatId, контактов - userHuid, сервисов - appId.
 
-#### Результаты 4 этапа:
 
-Разработчик понимает особенности разработки SmartApp
-Разработчик может применять на практике smartapp-sdk и другие средства разработки, принятые в команде
