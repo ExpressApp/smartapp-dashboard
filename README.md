@@ -12,7 +12,7 @@
 
 В дашборде имеется возможность поиска и сортировки сущностей. Сортировка реализована через drag-and-drop. Приложение реализуется под мобильные устройства и десктоп.
 
-****Описание [API](https://confluence.ccsteam.ru/display/EI/%5BTest%5D+SmartApp).****
+****Описание [API](https://test-smartapp.rndteam.ccstest.ru/docs).****
 ****Стек технологий:**** TS+React+React-Router+Redux+Saga+react-beautiful-dnd+react-slick+reactjs-popup.
 
 Bot Huid&SmartApp ID: c069df87-a345-5a42-8b4f-289927f97577.
