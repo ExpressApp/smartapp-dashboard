@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7b8674d4-5834-4f98-8804-baad483f5dd5" name="Changes" comment="feat: redux-persist, offline;&#10;fix: version 1.0.0">
+    <list default="true" id="7b8674d4-5834-4f98-8804-baad483f5dd5" name="Changes" comment="fix: rename (smartapp-dashboard);">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -89,7 +88,9 @@
       <workItem from="1690878251145" duration="42000" />
       <workItem from="1690878304714" duration="1222000" />
       <workItem from="1702460484169" duration="402000" />
-      <workItem from="1702470770836" duration="2228000" />
+      <workItem from="1702470770836" duration="6821000" />
+      <workItem from="1703241207380" duration="918000" />
+      <workItem from="1705585701019" duration="13000" />
     </task>
     <task id="LOCAL-00001" summary="feat: project;">
       <option name="closed" value="true" />
@@ -115,7 +116,31 @@
       <option name="project" value="LOCAL" />
       <updated>1702462429427</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="fix: README (remove step 4, link to FIGMA);">
+      <option name="closed" value="true" />
+      <created>1702475344500</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1702475344500</updated>
+    </task>
+    <task id="LOCAL-00005" summary="fix: API (README);">
+      <option name="closed" value="true" />
+      <created>1702542231167</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1702542231167</updated>
+    </task>
+    <task id="LOCAL-00006" summary="fix: rename (smartapp-dashboard);">
+      <option name="closed" value="true" />
+      <created>1703241508603</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1703241508603</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -136,6 +161,9 @@
     <MESSAGE value="feat: project;" />
     <MESSAGE value="fix: readme" />
     <MESSAGE value="feat: redux-persist, offline;&#10;fix: version 1.0.0" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: redux-persist, offline;&#10;fix: version 1.0.0" />
+    <MESSAGE value="fix: README (remove step 4, link to FIGMA);" />
+    <MESSAGE value="fix: API (README);" />
+    <MESSAGE value="fix: rename (smartapp-dashboard);" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix: rename (smartapp-dashboard);" />
   </component>
 </project>

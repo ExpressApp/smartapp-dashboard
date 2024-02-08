@@ -72,4 +72,87 @@ Bot Huid&SmartApp ID: c069df87-a345-5a42-8b4f-289927f97577.
 Для взаимодействия в Smartapp SDK существуют методы: openGroupChat, openContactCard, openSmartApp.  Каждый из этих методов принимает объект, в котором находится ID элемента.
 Для чатов это - groupChatId, контактов - userHuid, сервисов - appId.
 
+#### Кеширование контента
+**Redux Persist** – это инструмент, который используется для бесшовного сохранения объекта состояния Redux приложения в AsyncStorage.
+
+1. Первым шагом необходимо создать **Persist Store** для сохранения состояния Redux с помощью функции **persistStore**.
+```
+import { persistStore } from 'redux-persist'
+import { configureStore } from '../redux/configureStore'
+    
+export const store = configureStore()
+export const persistor = persistStore(store)
+```
+
+2. Вторым шагом необходимо обернуть корневой компонент приложения с помощью **PersistGate**.
+```
+import { PersistGate } from 'redux-persist/integration/react'
+import { store, persistor } from './helpers'
+
+ReactDOM.render(
+  <React.StrictMode>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <App history={history} />
+        <MainLoader />
+      </PersistGate>
+    </Provider>
+  </React.StrictMode>,
+  document.getElementById('root')
+)
+```
+
+3. Следующим шагом необходимо определить конфигурацию **Persist Config**, которую мы передадим в persistStore для настройки сохранения состояния стора.
+```
+import storage from 'redux-persist/lib/storage'
+
+const dashboardPersistConfig = {
+  key: 'dashboard',
+  storage,
+  whitelist: ['services', 'chats', 'contacts'],
+  blacklist: ['searchResults'],
+}
+```
+
+4. После описания конфигурации Persist Config, ее необходимо передать в **Persist Reducer**.
+```
+import { persistReducer } from 'redux-persist'
+
+const rootReducer = combineReducers<ApplicationState>({
+  ui,
+  router: connectRouter(historyRouter),
+  dashboard: persistReducer(dashboardPersistConfig, dashboard) as any,
+})
+```
+
+#### Кеширование статики
+1. Первым шагом необходимо добавить новые зависимости в **devDependencies**.
+```
+"generate-json-webpack-plugin": "^2.0.0",
+"react-app-rewired": "^2.2.1",
+"zip-webpack-plugin": "^4.0.1",
+```
+
+2. Вторым шагом необходимо обновить **build-скрипт**.
+```
+"build": "react-app-rewired build"
+```
+
+3. Третьим шагом необходимо создать [**smartapp-manifest.json**](smartapp-manifest.json) файл в корне проекта и скопировать в него код, представленный ниже.
+```
+{
+  "manifestVersion": "1.0.0",
+  "smartAppVersion": "==filled automatically==",
+  "bundlePath": "==filled automatically==",
+  "changeLog": "Кеширование контента и статики"
+}
+```
+
+* `manifestVersion` - константа (обязательно 1.0.0);
+* `smartAppVersion` - текущая версия SmartApp в формате [**semver**](https://semver.org/lang/ru/); при обновлении данного параметра клиент скачивает новый bundle;
+* `bundlePath` - путь к архиву со статикой SmartApp Frontend;
+* `changeLog` - описание изменений в текущей версии SmartApp; данное описание будет выведено пользователю.
+
+4. Четвертым шагом необходимо создать **config-overrides.js** файл в корне проекта и скопировать в него код из [**config-overrides.js файла**](config-overrides.js) для корректного использования библиотек, установленных на первом шаге.
+
 
