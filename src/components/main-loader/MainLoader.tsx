@@ -1,18 +1,14 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
 import { Loader } from '@expressms/smartapp-ui'
-import { getMainLoader } from '../../redux/selectors/ui'
-import { ApplicationState } from '../../types/reducers'
+import { getMainLoader, getTheme } from '../../redux/selectors/ui'
 import './MainLoader.scss'
 
 const MainLoader = () => {
-  const mainLoader = useSelector<ApplicationState, boolean>(getMainLoader)
+  const mainLoader = useSelector(getMainLoader)
+  const theme = useSelector(getTheme)
 
-  if (!mainLoader) {
-    return null
-  }
-
-  return <Loader isLoader />
+  return <Loader isLoader={mainLoader} theme={theme} backgroundColor="var(--color-bg-blackout-transparent)" />
 }
 
 export default MainLoader

@@ -1,12 +1,11 @@
-@import '../../../constants/constants';
-
 .add-section {
-  background: $lighter-gray-color;
-  padding: 16px 16px 8px 16px;
+  background: var(--color-bg-primary);
+  padding: 0 16px;
 
   &__title {
     font-weight: 700;
     font-size: 14px;
-    padding-bottom: 16px;
+    color: var(--color-text-primary);
+    padding-bottom: 8px;
   }
 }

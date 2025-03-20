@@ -1,4 +1,6 @@
 import { RouterState } from 'connected-react-router'
+import { CONNECTION_STATUS, LAYOUT_TYPES, PLATFORMS } from '../constants/constants'
+import { DashboardItem, TContact } from './types'
 
 export interface AppEvent {
   ref?: string | null
@@ -8,8 +10,13 @@ export interface AppEvent {
 }
 
 export interface UiState {
+  platform: PLATFORMS
+  theme: string
+  layoutType: LAYOUT_TYPES
+  connectionStatus: CONNECTION_STATUS
   mainLoader: boolean
   syncLoader: boolean
+  searchLoader: boolean
   notification: {
     isOpen: boolean
     type: string
@@ -32,11 +39,12 @@ export interface ChatState {
 }
 
 export interface ContactState {
-  name: string
+  userHuid: string
+  name: string | null
   avatar: string | null
   company: string | null
   companyPosition: string | null
-  contacts: Array<{ userHuid: string }>
+  contacts: TContact[]
   orderValue: number
 }
 
@@ -64,3 +72,15 @@ export interface ApplicationState {
 }
 
 export type DashboardItemTypes = 'services' | 'chats' | 'contacts'
+
+export type TSetFoundItemsForDashboard = {
+  services: ServiceState[] | null
+  chats: ChatState[] | null
+  contacts: ContactState[] | null
+}
+
+export type TAddItemToDashboard = { entity: DashboardItem; entityType: string }
+export type TUpdateItemsOnDashboard = { entity: DashboardItem; entityType: DashboardItemTypes }
+export type TRemoveItemFromDashboard = { entityId: string; entityType: string }
+export type TChangeDashboardItemsOrder = { entityType: string; entities: DashboardItem[] }
+export type TSetNotification = { isOpen: boolean; type: string }

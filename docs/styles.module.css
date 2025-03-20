@@ -1,0 +1,100 @@
+.container {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+}
+
+.centered {
+  text-align: center;
+}
+
+.image {
+  height: 450px;
+}
+
+.plug {
+  height: 250px;
+}
+
+.libraries {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.library {
+  width: fit-content;
+  color: #111;
+  background: #fff;
+  border-radius: 8px;
+  padding: 4px 8px;
+}
+
+[data-theme='dark'] .library {
+  color: #fff !important;
+  background: #111;
+}
+
+.green {
+  background: #f5fded;
+}
+
+[data-theme='dark'] .green {
+  background: #2f4318 !important;
+}
+
+.orange {
+  background: #fdf8ed;
+}
+
+[data-theme='dark'] .orange {
+  background: #433418 !important;
+}
+
+.blue {
+  background: #e0ffff;
+}
+
+[data-theme='dark'] .blue {
+  background: #182443 !important;
+}
+
+.red {
+  background: #fdedef;
+}
+
+[data-theme='dark'] .red {
+  background: #431820 !important;
+}
+
+.pink {
+  background: #fdedfc;
+}
+
+[data-theme='dark'] .pink {
+  background: #431843 !important;
+}
+
+.mint {
+  background: #edfdf9;
+}
+
+[data-theme='dark'] .mint {
+  background: #052d23 !important;
+}
+
+.purple {
+  background: #e6e6fa;
+}
+
+[data-theme='dark'] .purple {
+  background: #190032 !important;
+}
+
+.gray {
+  background: #f1f2f3;
+}
+
+[data-theme='dark'] .gray {
+  background: #2f3337 !important;
+}

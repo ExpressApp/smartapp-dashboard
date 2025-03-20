@@ -1,34 +1,54 @@
 @import '../../../constants/constants';
 
 .drag-drop-results-list {
-  background: $white-color;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--color-item);
+  box-shadow: 0 4px 17px 0 $color-grey-transparent-7;
   border-radius: 8px;
-  box-shadow: 0 1px 8px 0 $gray-color;
-  padding: 8px 16px 8px 16px;
+  padding: 8px 16px;
   margin: 0 16px;
 
   &__item {
     font-size: 14px;
+    color: var(--color-text-primary);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 0 16px 0;
+    padding: 8px 0;
+
+    &--name {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
 
     div:first-child {
+      width: calc(100% - 32px);
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    svg:first-child {
-      width: 24px;
-      height: 24px;
-    }
-
+    svg:first-child,
     svg:last-child {
       width: 24px;
       height: 24px;
+      flex-shrink: 0;
+    }
+
+    svg:last-child {
       cursor: pointer;
+    }
+
+    &--disabled {
+      cursor: default !important;
+
+      svg {
+        opacity: 0.25;
+        cursor: default !important;
+      }
     }
   }
 }

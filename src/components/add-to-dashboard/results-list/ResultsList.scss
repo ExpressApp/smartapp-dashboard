@@ -1,10 +1,10 @@
 @import '../../../constants/constants';
 
 .results-list {
-  background: $white-color;
-  box-shadow: 0 1px 8px $gray-color;
+  background: var(--color-item);
+  box-shadow: 0 4px 17px 0 $color-grey-transparent-7;
   border-radius: 8px;
-  padding: 16px;
+  padding: 8px 16px;
 
   &__item {
     display: flex;
@@ -15,14 +15,16 @@
     &--name {
       font-weight: 400;
       font-size: 14px;
+      color: var(--color-text-primary);
       word-break: break-word;
     }
 
     &--description {
       font-weight: 400;
       font-size: 12px;
-      color: $light-black-color;
+      color: var(--color-text-secondary);
       margin-top: 2px;
+      word-break: break-word;
     }
 
     &--common-info {
@@ -34,6 +36,7 @@
         min-width: 12px !important;
         min-height: 12px !important;
         margin-top: 3px;
+        flex-shrink: 0;
 
         &:hover {
           cursor: default !important;
@@ -53,14 +56,18 @@
       min-width: 19px;
       min-height: 19px;
       margin-left: auto;
+      flex-shrink: 0;
 
       &:hover {
         cursor: pointer;
       }
     }
 
-    .smartapp-avatar {
-      min-width: 32px;
+    &--disabled {
+      & > svg:last-of-type {
+        opacity: 0.25;
+        cursor: default !important;
+      }
     }
   }
 

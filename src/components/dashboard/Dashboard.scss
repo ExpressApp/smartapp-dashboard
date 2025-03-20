@@ -1,5 +1,3 @@
-@import '../../constants/constants';
-
 h4 {
   font-weight: 600;
   font-size: 14px;
@@ -15,17 +13,64 @@ h5 {
 h6 {
   font-weight: 400;
   font-size: 12px;
-  color: $darker-gray-color;
+  color: var(--color-text-secondary);
   margin: 6px 0 0 0;
 }
 
+h4,
+h6 {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 48px);
+
+  & > .dashboard-section:last-child {
+    flex-grow: 1;
+    margin-bottom: 0;
+  }
+}
+
 .slider {
-  .slick-dots li button:before {
-    font-size: 6px;
+  .slick-dots li button {
+    &:before {
+      font-size: 6px;
+      color: var(--color-icon-primary);
+    }
+
+    &:hover {
+      &:before {
+        color: var(--color-icon-primary-hover);
+      }
+    }
+
+    &:active {
+      &:before {
+        color: var(--color-icon-primary-pressed);
+      }
+    }
   }
 
-  .slick-dots li.slick-active button:before {
-    color: $blue-color;
-    font-size: 8px;
+  .slick-dots li.slick-active button {
+    &:before {
+      font-size: 8px;
+      color: var(--color-icon-accent);
+    }
+
+    &:hover {
+      &:before {
+        color: var(--color-icon-accent-hover);
+      }
+    }
+
+    &:active {
+      &:before {
+        color: var(--color-icon-accent-pressed);
+      }
+    }
   }
 }

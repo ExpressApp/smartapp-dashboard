@@ -1,0 +1,71 @@
+---
+sidebar_position: 5
+---
+
+import Tabs from '@theme/Tabs'
+import TabItem from '@theme/TabItem'
+import ThemedImage from '@theme/ThemedImage'
+import useBaseUrl from '@docusaurus/useBaseUrl'
+import styles from './styles.module.css'
+
+# Оффлайн-режим
+
+В проекте реализован оффлайн-режим. В случае отсутствия доступа к интернету часть функционала приложения становится недоступной:
+
+1. На главной странице будет заблокирован клик по закрепленным элементам, то есть переходы в SmartApps, открытие чатов и карточек контактов не будут выполняться.
+2. На странице поиска и добавления поисковая строка будет отключена, а также станет недоступной функция добавления и удаления элементов.
+3. На странице настроек будет ограничена возможность удаления и перемещения элементов.
+
+<Tabs>
+  <TabItem value="main" label="Main Page">
+    <div className={styles.centered}>
+      <ThemedImage
+        className={styles.image}
+        alt="main"
+        sources={{ light: useBaseUrl('/main-offline.png'), dark: useBaseUrl('/main-offline-dark.png') }}
+      />
+    </div>
+  </TabItem>
+  <TabItem value="add" label="Add Page">
+    <div className={styles.centered}>
+      <ThemedImage
+        className={styles.image}
+        alt="add"
+        sources={{ light: useBaseUrl('/add-offline.png'), dark: useBaseUrl('/add-offline-dark.png') }}
+      />
+    </div>
+  </TabItem>
+  <TabItem value="settings" label="Settings Page">
+    <div className={styles.centered}>
+      <ThemedImage
+        className={styles.image}
+        alt="settings"
+        sources={{ light: useBaseUrl('/settings-offline.png'), dark: useBaseUrl('/settings-offline-dark.png') }}
+      />
+    </div>
+  </TabItem>
+</Tabs>
+
+При входе в приложение можно получить состояние сетевого подключения с помощью метода [getConnectionStatus](https://docs.express.ms/smartapps/developer-guide/smartapp-sdk/methods/connection-status/#getconnectionstatus). Если возвращаемое значение connectionStatus равно connected, отправляется запрос для получения закрепленных элементов на дашборде. Если же connectionStatus = disconnected, пользователю показывается уведомлении об отсутствии интернета на устройстве.
+
+```javascript
+import { getConnectionStatus } from '@expressms/smartapp-sdk'
+
+const responseConnectionStatus = yield getConnectionStatus()
+const connectionStatus = yield responseConnectionStatus?.payload?.connectionStatus
+
+if (isStatusConnected(connectionStatus)) {
+  yield fetchDashboardItemsSaga()
+} else {
+  yield put(setNotification({ isOpen: true, type: NO_INTERNET_CONNECTION }))
+}
+```
+
+Кроме того, следует подписаться на изменение статуса подключения, используя метод [subscribeClientEvents](https://docs.express.ms/smartapps/developer-guide/smartapp-sdk/methods/connection-status/#subscribeclientevents), чтобы отображать или скрывать уведомление об отсутствии интернета в зависимости от изменений статуса подключения.
+
+```javascript
+import { subscribeClientEvents } from '@expressms/smartapp-sdk'
+import { SubscriptionEventType } from '@expressms/smartapp-sdk/build/main/types'
+
+yield subscribeClientEvents({ eventType: SubscriptionEventType.CONNECTION_STATUS })
+```

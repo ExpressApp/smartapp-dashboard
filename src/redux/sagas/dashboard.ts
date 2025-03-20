@@ -1,6 +1,17 @@
-import { all, put, takeEvery, select } from 'redux-saga/effects'
-import { Bridge as bridge, ready, getChats, searchCorporatePhonebook, openSmartApp, openGroupChat, openContactCard } from '@expressms/smartapp-sdk'
-import { GeneratorFunction } from '../../types/sagas'
+import { all, put, takeEvery, select, delay } from 'redux-saga/effects'
+import {
+  Bridge as bridge,
+  ready,
+  getChats,
+  searchCorporatePhonebook,
+  openSmartApp,
+  openGroupChat,
+  openContactCard,
+  subscribeClientEvents,
+  getLayoutType,
+  getConnectionStatus,
+} from '@expressms/smartapp-sdk'
+import { SubscriptionEventType } from '@expressms/smartapp-sdk/build/main/types'
 import {
   INIT_APP,
   FETCH_DASHBOARD_ITEMS,
@@ -24,34 +35,65 @@ import {
   openGroupChatActionType,
   openContactCardActionType,
 } from '../actions/dashboard'
-import { resetNotification, setMainLoader, setNotification, setSyncLoader } from '../actions/ui'
+import { resetNotification, setConnectionStatus, setLayoutType, setMainLoader, setNotification, setSearchLoader, setSyncLoader } from '../actions/ui'
 import { getDashboardItems } from '../selectors/dashboard'
+import { getIsWebPlatform } from '../selectors/ui'
+import { generateContactUserHuid, generateNextOrderValue, isChatType, isContactType, isEmpty, isServiceType, isStatusConnected } from '../../helpers'
 import {
+  MAX_SECTION_ITEMS,
   METHODS,
-  NOTIFICATION_TYPES,
+  MIN_SEARCH_LOADER_DISPLAY_TIME,
+  NO_INTERNET_CONNECTION,
   ROUTES_PATH,
   SECTION_TYPE,
   STATUS_OK,
   STATUS_SUCCESS,
 } from '../../constants/constants'
+import { GeneratorFunction } from '../../types/sagas'
 import { ChatState, ContactState, DashboardItemTypes, ServiceState } from '../../types/reducers'
-import { getContactUserHuid, getNextOrderValue, isEmpty } from '../../helpers'
 import history from '../router'
 
 export function* initAppSaga(): GeneratorFunction {
   try {
+    const isWebPlatform = yield select(getIsWebPlatform)
     const { services, chats, contacts } = yield select(getDashboardItems)
-    const { isDataNull } = isEmpty(services, chats, contacts)
+    const { isDataNull } = isEmpty({ services, chats, contacts })
 
     isDataNull ? yield put(setMainLoader(true)) : yield put(setSyncLoader(true))
-
     yield ready()
-    yield fetchDashboardItemsSaga()
+
+    const responseConnectionStatus = yield getConnectionStatus()
+    const connectionStatus = yield responseConnectionStatus?.payload?.connectionStatus
+
+    yield put(setConnectionStatus(connectionStatus))
+    yield subscribeClientEvents({ eventType: SubscriptionEventType.CONNECTION_STATUS })
+
+    if (isStatusConnected(connectionStatus)) {
+      yield fetchDashboardItemsSaga()
+    } else {
+      yield put(setNotification({ isOpen: true, type: NO_INTERNET_CONNECTION }))
+    }
+
+    if (isWebPlatform) {
+      yield requestLayoutTypeSaga()
+      yield subscribeClientEvents({ eventType: SubscriptionEventType.LAYOUT_TYPE })
+    }
   } catch (e) {
     console.error('initAppSaga error: ', e)
   } finally {
     yield put(setMainLoader(false))
     yield put(setSyncLoader(false))
+  }
+}
+
+export function* requestLayoutTypeSaga(): GeneratorFunction {
+  try {
+    const response = yield getLayoutType()
+    const result = yield response?.payload?.layoutType
+
+    if (result) yield put(setLayoutType(result))
+  } catch (e) {
+    console.error('requestLayoutTypeSaga error: ', e)
   }
 }
 
@@ -61,13 +103,15 @@ export function* fetchDashboardItemsSaga(): GeneratorFunction {
       method: METHODS.getDashboard,
       params: {},
     })
+    const responseStatus = response?.payload?.status
+    const responseResult = response?.payload?.result
 
-    if (response?.payload?.status === STATUS_OK) {
-      yield put(setDashboardItems({
-        services: response?.payload?.result?.services || [],
-        chats: response?.payload?.result?.chats || [],
-        contacts: response?.payload?.result?.contacts || [],
-      }))
+    if (responseStatus === STATUS_OK) {
+      const services = responseResult?.services || []
+      const chats = responseResult?.chats || []
+      const contacts = responseResult?.contacts || []
+
+      yield put(setDashboardItems({ services, chats, contacts }))
     }
   } catch (e) {
     console.error('fetchDashboardItemsSaga error: ', e)
@@ -75,12 +119,15 @@ export function* fetchDashboardItemsSaga(): GeneratorFunction {
 }
 
 export function* searchForNewDashboardItemsSaga({ payload: querySearch }: searchForNewDashboardItemsActionType): GeneratorFunction {
+  let startTime = 0
+
   try {
-    yield put(setMainLoader(true))
+    startTime = performance.now()
+    yield put(setSearchLoader(true))
 
     const servicesResponse = yield bridge?.sendBotEvent({
       method: METHODS.getServices,
-      params: { query_search: querySearch },
+      params: { querySearch },
     })
     const services = [...(servicesResponse?.payload?.result?.services || [])]
 
@@ -94,45 +141,48 @@ export function* searchForNewDashboardItemsSaga({ payload: querySearch }: search
   } catch (e) {
     console.error('searchForNewDashboardItemsSaga error: ', e)
   } finally {
-    yield put(setMainLoader(false))
+    const endTime = performance.now()
+    const loaderDisplayTime = endTime - startTime
+
+    loaderDisplayTime < MIN_SEARCH_LOADER_DISPLAY_TIME && (yield delay(MIN_SEARCH_LOADER_DISPLAY_TIME - loaderDisplayTime))
+    yield put(setSearchLoader(false))
   }
 }
 
-export function* addItemToDashboardSaga({ payload }: addItemToDashboardActionType): GeneratorFunction {
+export function* addItemToDashboardSaga({ payload: { entityType, entity } }: addItemToDashboardActionType): GeneratorFunction {
   try {
     yield put(setMainLoader(true))
 
-    let { services, chats, contacts } = yield select(getDashboardItems)
+    const { services = [], chats = [], contacts = [] } = yield select(getDashboardItems)
+    const isServices = isServiceType(entityType)
+    const isChats = isChatType(entityType)
+    const isContacts = isContactType(entityType)
 
-    if (payload.entityType === SECTION_TYPE.services && services.length === 9) {
-      yield put(setNotification({ isOpen: true, type: NOTIFICATION_TYPES.services }))
-      return
-    } else if (payload.entityType === SECTION_TYPE.chats && chats.length === 9) {
-      yield put(setNotification({ isOpen: true, type: NOTIFICATION_TYPES.chats }))
-      return
-    } else if (contacts.length === 9) {
-      yield put(setNotification({ isOpen: true, type: NOTIFICATION_TYPES.contacts }))
+    if (isServices && services.length === MAX_SECTION_ITEMS) {
+      yield put(setNotification({ isOpen: true, type: SECTION_TYPE.services }))
       return
     }
 
-    const orderValue: number = payload.entityType === SECTION_TYPE.services
-      ? getNextOrderValue(services)
-      : payload.entityType === SECTION_TYPE.chats
-        ? getNextOrderValue(chats)
-        : getNextOrderValue(contacts)
+    if (isChats && chats.length === MAX_SECTION_ITEMS) {
+      yield put(setNotification({ isOpen: true, type: SECTION_TYPE.chats }))
+      return
+    }
+
+    if (isContacts && contacts.length === MAX_SECTION_ITEMS) {
+      yield put(setNotification({ isOpen: true, type: SECTION_TYPE.contacts }))
+      return
+    }
+
+    const orderValue = generateNextOrderValue({ entityType, services, chats, contacts })
 
     const response = yield bridge?.sendBotEvent({
       method: METHODS.postDashboard,
-      params: {
-        entity_type: payload.entityType,
-        entity: payload.entity,
-      },
+      params: { entityType, entity },
     })
 
     if (response?.payload?.result === STATUS_SUCCESS) {
-      const entityType = `${payload.entityType}s` as DashboardItemTypes
-
-      yield put(updateItemsOnDashboard({ entity: { ...payload.entity, orderValue }, entityType }))
+      const entitiesType = `${entityType}s` as DashboardItemTypes
+      yield put(updateItemsOnDashboard({ entity: { ...entity, orderValue }, entityType: entitiesType }))
     }
   } catch (e) {
     console.error('addItemToDashboardSaga error: ', e)
@@ -141,26 +191,23 @@ export function* addItemToDashboardSaga({ payload }: addItemToDashboardActionTyp
   }
 }
 
-export function* removeItemFromDashboardSaga({ payload }: removeItemFromDashboardActionType): GeneratorFunction {
+export function* removeItemFromDashboardSaga({ payload: { entityType, entityId } }: removeItemFromDashboardActionType): GeneratorFunction {
   try {
     yield put(setMainLoader(true))
 
-    let { services, chats, contacts } = yield select(getDashboardItems)
+    let { services = [], chats = [], contacts = [] } = yield select(getDashboardItems)
 
-    if (payload.entityType === SECTION_TYPE.services) {
-      services = [...(services as ServiceState[]).filter(({ smartappHuid }) => smartappHuid !== payload.entityId)]
-    } else if (payload.entityType === SECTION_TYPE.chats) {
-      chats = [...(chats as ChatState[]).filter(({ groupChatId }) => groupChatId !== payload.entityId)]
+    if (isServiceType(entityType)) {
+      services = [...services.filter(({ smartappHuid }: ServiceState) => smartappHuid !== entityId)]
+    } else if (isChatType(entityType)) {
+      chats = [...chats.filter(({ groupChatId }: ChatState) => groupChatId !== entityId)]
     } else {
-      contacts = [...(contacts as ContactState[]).filter((contact) => getContactUserHuid(contact) !== payload.entityId)]
+      contacts = [...contacts.filter((contact: ContactState) => generateContactUserHuid(contact) !== entityId)]
     }
 
     const response = yield bridge?.sendBotEvent({
       method: METHODS.deleteDashboard,
-      params: {
-        entity_type: payload.entityType,
-        entity_id: payload.entityId,
-      },
+      params: { entityType, entityId },
     })
 
     if (response?.payload?.result === STATUS_SUCCESS) {
@@ -173,39 +220,27 @@ export function* removeItemFromDashboardSaga({ payload }: removeItemFromDashboar
   }
 }
 
-export function* changeDashboardItemsOrderSaga({ payload }: changeDashboardItemsOrderActionType): GeneratorFunction {
+export function* changeDashboardItemsOrderSaga({ payload: { entityType, entities } }: changeDashboardItemsOrderActionType): GeneratorFunction {
   try {
     yield put(setMainLoader(true))
 
     let { services, chats, contacts } = yield select(getDashboardItems)
     let entitiesOrder
 
-    if (payload.entityType === SECTION_TYPE.services) {
-      services = [...payload.entities]
-      entitiesOrder = payload.entities.map((entity) => ({
-        id: entity.smartappHuid,
-        order_value: entity.orderValue,
-      }))
-    } else if (payload.entityType === SECTION_TYPE.chats) {
-      chats = [...payload.entities]
-      entitiesOrder = payload.entities.map((entity) => ({
-        id: entity.groupChatId,
-        order_value: entity.orderValue,
-      }))
+    if (isServiceType(entityType)) {
+      services = [...entities]
+      entitiesOrder = entities.map(({ smartappHuid: id, orderValue }) => ({ id, orderValue }))
+    } else if (isChatType(entityType)) {
+      chats = [...entities]
+      entitiesOrder = entities.map(({ groupChatId: id, orderValue }) => ({ id, orderValue }))
     } else {
-      contacts = [...payload.entities]
-      entitiesOrder = payload.entities.map((entity) => ({
-        id: getContactUserHuid(entity),
-        order_value: entity.orderValue,
-      }))
+      contacts = [...entities]
+      entitiesOrder = entities.map((entity) => ({ id: generateContactUserHuid(entity as ContactState), orderValue: entity.orderValue }))
     }
 
     const response = yield bridge?.sendBotEvent({
       method: METHODS.patchDashboardOrdering,
-      params: {
-        entity_type: payload.entityType,
-        entities_order: entitiesOrder,
-      },
+      params: { entityType, entitiesOrder },
     })
 
     if (response?.payload?.result === STATUS_SUCCESS) {
@@ -246,6 +281,7 @@ export function* resetDashboardStateSaga(): GeneratorFunction {
   try {
     yield put(setMainLoader(true))
     yield put(setSyncLoader(false))
+    yield put(setSearchLoader(false))
     yield put(resetNotification())
     yield put(setDashboardItems({ services: null, chats: null, contacts: null }))
     yield put(resetFoundItemsForDashboard())

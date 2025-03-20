@@ -1,0 +1,105 @@
+---
+title: Поиск и добавление элементов
+sidebar_position: 2
+---
+
+import Tabs from '@theme/Tabs'
+import TabItem from '@theme/TabItem'
+import ThemedImage from '@theme/ThemedImage'
+import useBaseUrl from '@docusaurus/useBaseUrl'
+import styles from '../styles.module.css'
+
+Для добавления сервиса, чата или контакта в личный дашбор пользователю нужно сначала найти необходимый элемент. Для этого достаточно ввести минимум 3 символа в поисковую строку и нажать "Enter".
+
+<div className={styles.centered}>
+  <ThemedImage alt="query" sources={{ light: useBaseUrl('/query.png'), dark: useBaseUrl('/query-dark.png') }} />
+</div>
+
+Поиск по сервисам, чатам и контактам осуществляется разными методами:
+
+1. Поиск по сервисам осуществляется с использованием метода [sendBotEvent](https://docs.express.ms/smartapps/developer-guide/smartapp-sdk/methods/interacting-with-bot/#sendbotevent). В качестве параметра передается объект, в котором в поле "method" указывается "services.get", а в поле "query_search" - значение, введенное пользователем в поисковую строку.
+2. Поиск по чатам выполняется с помощью клиентского метода [getChats](https://docs.express.ms/smartapps/developer-guide/smartapp-sdk/methods/chats/#getchats), а поиск по контактам - с помощью метода [searchCorporatePhonebook](https://docs.express.ms/smartapps/developer-guide/smartapp-sdk/methods/contacts/#searchcorporatephonebook).
+
+```javascript
+export function* searchForNewDashboardItemsSaga({ payload: querySearch }: searchForNewDashboardItemsActionType): GeneratorFunction {
+  try {
+    const servicesResponse = yield bridge?.sendBotEvent({
+      method: METHODS.getServices,
+      params: { querySearch },
+    })
+    const services = [...(servicesResponse?.payload?.result?.services || [])]
+
+    const chatsResponse = yield getChats({ filter: querySearch })
+    const chats = [...(chatsResponse?.payload?.chats || [])]
+
+    const contactsResponse = yield searchCorporatePhonebook({ filter: querySearch })
+    const contacts = [...(contactsResponse?.payload?.corpPhonebookEntries || []), ...(contactsResponse?.payload?.trustSearchEntries || [])]
+
+    yield put(setFoundItemsForDashboard({ services, chats, contacts }))
+  } catch (e) {
+    console.error('searchForNewDashboardItemsSaga error: ', e)
+  }
+}
+```
+
+Для добавления элемента в дашборд пользователю необходимо нажать на иконку плюса. Если элемент уже добавлен, рядом с ним отобразится иконка минуса, при нажатии на которую элемент будет удален.
+
+<div className={styles.centered}>
+  <ThemedImage
+    className={styles.image}
+    alt="found-items"
+    sources={{ light: useBaseUrl('/found-items.png'), dark: useBaseUrl('/found-items-dark.png') }}
+  />
+</div>
+
+Если в одной из секций нет элементов, соотвествующих запросу, эта секция не будет отображена пользователю. Например, в данном случае секция с сервисами не отображается, так как запрос не дал результатов, вернул пустой массив.
+
+<div className={styles.centered}>
+  <ThemedImage
+    className={styles.image}
+    alt="without-services"
+    sources={{ light: useBaseUrl('/without-services.png'), dark: useBaseUrl('/without-services-dark.png') }}
+  />
+</div>
+
+Если по запросу ничего не найдено, пользователю будет предложено изменить запрос и повторить поиск.
+
+<div className={styles.centered}>
+  <ThemedImage
+    className={styles.plug}
+    alt="no-results"
+    sources={{ light: useBaseUrl('/no-results.png'), dark: useBaseUrl('/no-results-dark.png') }}
+  />
+</div>
+
+Максимальное количество элементов, которое можно добавить в каждую секцию, равно 9. Если пользователь пытается добавить больше, то ему будет показано соответствующее уведомление.
+
+<Tabs>
+  <TabItem value="services" label="max number of services">
+    <div className={styles.centered}>
+      <ThemedImage
+        className={styles.image}
+        alt="max-services"
+        sources={{ light: useBaseUrl('/max-services.png'), dark: useBaseUrl('/max-services-dark.png') }}
+      />
+    </div>
+  </TabItem>
+  <TabItem value="chats" label="max number of chats">
+    <div className={styles.centered}>
+      <ThemedImage
+        className={styles.image}
+        alt="max-chats"
+        sources={{ light: useBaseUrl('/max-chats.png'), dark: useBaseUrl('/max-chats-dark.png') }}
+      />
+    </div>
+  </TabItem>
+  <TabItem value="contacts" label="max number of contacts">
+    <div className={styles.centered}>
+      <ThemedImage
+        className={styles.image}
+        alt="max-contacts"
+        sources={{ light: useBaseUrl('/max-contacts.png'), dark: useBaseUrl('/max-contacts-dark.png') }}
+      />
+    </div>
+  </TabItem>
+</Tabs>

@@ -1,0 +1,80 @@
+---
+title: Закрепленные сервисы, чаты, контакты
+sidebar_position: 1
+---
+
+import Tabs from '@theme/Tabs'
+import TabItem from '@theme/TabItem'
+import ThemedImage from '@theme/ThemedImage'
+import useBaseUrl from '@docusaurus/useBaseUrl'
+import styles from '../styles.module.css'
+
+На главной странице отображаются закрепленные пользователем сущности, сгруппированные по категориям: "Сервисы", "Чаты" и "Контакты". Для их отображения используется библиотека [react-slick](https://react-slick.neostack.com/).
+
+Максимальное количество элементов, отображаемых на экране, зависит от размера окна приложения - "minimal", "half" или "full".
+
+<Tabs>
+  <TabItem value="minimal" label="Minimal Web Layout Type / iOS / Android">
+    <div className={styles.centered}>
+      <ThemedImage className={styles.image} alt="minimal" sources={{ light: useBaseUrl('/minimal.png'), dark: useBaseUrl('/minimal-dark.png') }} />
+    </div>
+  </TabItem>
+  <TabItem value="half" label="Half Web Layout Type">
+    <div className={styles.centered}>
+      <ThemedImage className={styles.image} alt="half" sources={{ light: useBaseUrl('/half.png'), dark: useBaseUrl('/half-dark.png') }} />
+    </div>
+  </TabItem>
+  <TabItem value="full" label="Full Web Layout Type">
+    <div className={styles.centered}>
+      <ThemedImage className={styles.image} alt="full" sources={{ light: useBaseUrl('/full.png'), dark: useBaseUrl('/full-dark.png') }} />
+    </div>
+  </TabItem>
+</Tabs>
+
+При входе в приложение необходимо запросить размер окна приложения с помощью метода [getLayoutType](https://docs.express.ms/smartapps/developer-guide/smartapp-sdk/methods/layout/#getlayouttype).
+
+```javascript
+import { getLayoutType } from '@expressms/smartapp-sdk'
+
+export function* requestLayoutTypeSaga(): GeneratorFunction {
+  try {
+    const response = yield getLayoutType()
+    const result = yield response?.payload?.layoutType
+
+    if (result) yield put(setLayoutType(result))
+  } catch (e) {
+    console.error('requestLayoutTypeSaga error: ', e)
+  }
+}
+```
+
+Также необходимо подписаться на изменение размера окна приложения, используя метод [subscribeClientEvents](https://docs.express.ms/smartapps/developer-guide/smartapp-sdk/methods/layout/#subscribeclientevents).
+
+```javascript
+import { subscribeClientEvents } from '@expressms/smartapp-sdk'
+import { SubscriptionEventType } from '@expressms/smartapp-sdk/build/main/types'
+
+yield subscribeClientEvents({ eventType: SubscriptionEventType.LAYOUT_TYPE })
+```
+
+Если в какой-либо из секций нет закрепленных элементов, эта секция не будет отображена пользователю. В данном случае у пользователя нет закрепленных контактов.
+
+<div className={styles.centered}>
+  <ThemedImage
+    className={styles.image}
+    alt="without-contacts"
+    sources={{ light: useBaseUrl('/without-contacts.png'), dark: useBaseUrl('/without-contacts-dark.png') }}
+  />
+</div>
+
+Если пользователь впервые заходит в Dashboard SmartApp или удалил все закрепленные элементы, ему будет показана кнопка для перехода на страницу добавления сущностей.
+
+<div className={styles.centered}>
+  <ThemedImage
+    className={styles.plug}
+    alt="empty-dashboard"
+    sources={{ light: useBaseUrl('/empty-dashboard.png'), dark: useBaseUrl('/empty-dashboard-dark.png') }}
+  />
+</div>
+
+При клике на закрепленный сервис откроется соответствующий SmartApp с помощью метода [openSmartApp](https://docs.express.ms/smartapps/developer-guide/smartapp-sdk/methods/navigation/#opensmartapp). Клик по чату приведет к переходу в соответствующий чат с помощью метода [openGroupChat](https://docs.express.ms/smartapps/developer-guide/smartapp-sdk/methods/chats/#opengroupchat), а при клике на контакт откроется его карточка с помощью метода [openContactCard](https://docs.express.ms/smartapps/developer-guide/smartapp-sdk/methods/contacts/#opencontactcard).

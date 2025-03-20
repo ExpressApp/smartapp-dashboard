@@ -1,0 +1,101 @@
+---
+sidebar_position: 4
+---
+
+import Tabs from '@theme/Tabs'
+import TabItem from '@theme/TabItem'
+import ThemedImage from '@theme/ThemedImage'
+import useBaseUrl from '@docusaurus/useBaseUrl'
+import styles from './styles.module.css'
+
+# SmartApp-UI & Темная тема
+
+В проекте используется библиотека компонентов [SmartApp UI](https://www.npmjs.com/package/@expressms/smartapp-ui). Со всеми актуальными компонентами библиотеки можно ознакомится в [Storybook](https://smartapp-ui.rndteam.ccstest.ru/?path=/story/reactcomponentlibrary-actionmodal--action-modal-component).
+
+Ниже представлен перечень компонентов, используемых в проекте:
+
+1. [Avatar](https://smartapp-ui.rndteam.ccstest.ru/?path=/story/reactcomponentlibrary-avatar--avatar-component) - отображает аватары сервисов, чатов и контактов;
+2. [Button](https://smartapp-ui.rndteam.ccstest.ru/?path=/story/reactcomponentlibrary-button--primary-accent-button) - кнопка, которая отображается на главном экране и в настройках, если у пользователя нет закрепленных элементов;
+3. [Header](https://smartapp-ui.rndteam.ccstest.ru/?path=/story/reactcomponentlibrary-header--header-without-title) - служит навигационной панелью, показывая информацию о текущем разделе и позволяя переходить в другие разделы приложения;
+4. [Input](https://smartapp-ui.rndteam.ccstest.ru/?path=/story/reactcomponentlibrary-input--input-component) - используется на странице поиска и добавления элементов в дашборд;
+5. [Loader](https://smartapp-ui.rndteam.ccstest.ru/?path=/story/reactcomponentlibrary-loader--full-screen-loader-without-title) - информирует пользователя о процессе выполнения запроса, например, при добавлении, удалении или изменении порядка элементов;
+6. [Notification](https://smartapp-ui.rndteam.ccstest.ru/?path=/story/reactcomponentlibrary-notification--success-notification-component) - уведомляет пользователя, когда он пытается закрепить больше элементов, чем позволяет лимит;
+7. [ScrollBar](https://smartapp-ui.rndteam.ccstest.ru/?path=/story/reactcomponentlibrary-scrollbar--scroll-bar-component) - компонент для реализации универсального скроллбара, совместимого с различными платформами;
+8. [Skeleton](https://smartapp-ui.rndteam.ccstest.ru/?path=/story/reactcomponentlibrary-skeleton--skeleton-component) - используется в качестве «заглушки» на месте контента, уведомляя пользователя о процессе поиска элементов, соответсвующих запросу;
+9. [SyncLoader](https://smartapp-ui.rndteam.ccstest.ru/?path=/story/reactcomponentlibrary-syncloader--sync-loader-component) - информирует пользователя об обновлении данных, появляется при входе в приложение, если имеются закешированные данные.
+
+# Темная тема
+
+Интерфейс Dashboard SmartApp представлен в двух темах: default и dark.
+
+<Tabs>
+  <TabItem value="main" label="Main Page">
+    <div className={styles.container}>
+      <img src="/main-page.png" alt="main-page" className={styles.image} />
+      <img src="/main-page-dark.png" alt="main-page" className={styles.image} />
+    </div>
+  </TabItem>
+  <TabItem value="add" label="Add Page">
+    <div className={styles.container}>
+      <img src="/add-page.png" alt="add-page" className={styles.image} />
+      <img src="/add-page-dark.png" alt="add-page" className={styles.image} />
+    </div>
+  </TabItem>
+  <TabItem value="settings" label="Settings Page">
+    <div className={styles.container}>
+      <img src="/settings-page.png" alt="settings-page" className={styles.image} />
+      <img src="/settings-page-dark.png" alt="settings-page" className={styles.image} />
+    </div>
+  </TabItem>
+</Tabs>
+
+При запуске SmartApp клиент "eXpress" передает выбранную тему через query-параметр theme. Для указания темы в процессе локальной разработки, необходимо открыть [веб-клиент "eXpress"](https://web-dev.ccsteam.ru/#/), кликнуть на иконку "настроек" и перейти в раздел "SmartApps".
+
+<div className={styles.centered}>
+  <ThemedImage alt="smartapps-theme" sources={{ light: useBaseUrl('/smartapps-theme.gif'), dark: useBaseUrl('/smartapps-theme-dark.gif') }} />
+</div>
+
+В поле "SmartApp Url" нужно ввести адрес (например, для локального запуска SmartApp frontend это может быть http://localhost:3000) и добавить параметры platform=web и theme=dark.
+
+<div className={styles.centered}>
+  <ThemedImage
+    className={styles.image}
+    alt="web-dev"
+    sources={{ light: useBaseUrl('/web-dev-theme.png'), dark: useBaseUrl('/web-dev-theme-dark.png') }}
+  />
+</div>
+
+Для получения темы из query-параметров в коде можно использовать хук useQuery.
+
+```javascript
+import { useQuery } from '@expressms/smartapp-sdk'
+
+const { theme } = useQuery()
+```
+
+Некоторые компоненты из SmartApp-UI поддерживают темную тему через пропс theme, другие используют палитру цветов.
+
+Ниже приведен пример передачи пропса theme для корректного отображения Skeleton компонента в обеих темах.
+
+```javascript
+import { useSelector } from 'react-redux'
+import { Skeleton } from '@expressms/smartapp-ui'
+import { getTheme } from '../../../redux/selectors/ui'
+
+const theme = useSelector(getTheme)
+
+return <Skeleton theme={theme} containerRef={skeletonsRef} height={SKELETON_HEIGHT} />
+```
+
+Чтобы компоненты SmartApp-UI, использующие палитру цветов, корректно отображались в обеих темах, элементу \<html> необходимо добавить атрибут data-theme. Приведенный ниже фрагмент кода также требуется, если вы используете палитру цветов из SmartApp-UI в своем проекте и поддерживаете обе темы.
+
+```javascript
+const { theme } = useQuery()
+document.documentElement.setAttribute('data-theme', theme)
+```
+
+Для использования палитры цветов из SmartApp-UI в проекте достаточно указать --var(...), и IDE автоматически покажет все доступные переменные.
+
+```
+color: var(--color-text-primary);
+```

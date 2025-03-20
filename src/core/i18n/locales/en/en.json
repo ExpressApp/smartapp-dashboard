@@ -1,0 +1,19 @@
+{
+  "myDashboard": "Personal Dashboard",
+  "servicesSection": "Services",
+  "chatsSection": "Chats",
+  "contactsSection": "Contacts",
+  "addToDashboard": "Add to Dashboard",
+  "entities": "Services, chats, contacts",
+  "enterQuery": "Your search query must be at least 3 characters long",
+  "settings": "Settings",
+  "maxNumberOfServicesAdded": "You have added the maximum number of services",
+  "maxNumberOfChatsAdded": "You have added the maximum number of chats",
+  "maxNumberOfContactsAdded": "You have added the maximum number of contacts",
+  "noInternetConnection": "No internet connection",
+  "dashboardIsEmpty": "Your dashboard is empty",
+  "goToAdd": "Add the Entity",
+  "noResultsFound": "Sorry, we couldn't find any results.",
+  "fixRequestAndTryAgain": "Double check your search for any typos or spelling errors, or try a different search term.",
+  "syncText": "Updating"
+}
