@@ -1,13 +1,21 @@
-@import '../../../constants/constants';
-
 .dashboard-section {
-  background: $lighter-gray-color;
-  padding: 16px 16px 32px 16px;
+  background: var(--color-bg-primary);
+  padding: 16px 16px 40px 16px;
   margin-bottom: 8px;
 
   &__title {
     font-weight: 700;
     font-size: 16px;
+    color: var(--color-text-primary);
     padding-bottom: 16px;
+  }
+
+  &__chat,
+  &__contact {
+    padding-bottom: 16px;
+
+    & > .slick-slider:has(.slick-dots) {
+      margin-bottom: 24px;
+    }
   }
 }

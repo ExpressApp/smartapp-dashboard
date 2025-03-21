@@ -1,0 +1,19 @@
+{
+  "myDashboard": "Личный дашборд",
+  "servicesSection": "Сервисы",
+  "chatsSection": "Чаты",
+  "contactsSection": "Контакты",
+  "addToDashboard": "Добавить на дашборд",
+  "entities": "Сервисы, чаты, контакты",
+  "enterQuery": "Введите запрос от 3 символов",
+  "settings": "Настройки",
+  "maxNumberOfServicesAdded": "Вы добавили максимальное количество сервисов",
+  "maxNumberOfChatsAdded": "Вы добавили максимальное количество чатов",
+  "maxNumberOfContactsAdded": "Вы добавили максимальное количество контактов",
+  "noInternetConnection": "Нет подключения к интернету",
+  "dashboardIsEmpty": "Ваш дашборд пуст",
+  "goToAdd": "Перейти к добавлению",
+  "noResultsFound": "Поиск не дал результатов.",
+  "fixRequestAndTryAgain": "Исправьте запрос и попробуйте снова.",
+  "syncText": "Обновление"
+}

@@ -2,14 +2,15 @@ import { eventChannel, EventChannel } from 'redux-saga'
 import { all, call, take, put } from 'redux-saga/effects'
 import { Bridge as bridge } from '@expressms/smartapp-sdk'
 import { AppEvent } from '../../types/reducers'
-import { METHODS } from '../../constants/constants'
-import { persistor } from '../../helpers'
+import { CONNECTION_STATUS, METHODS, NO_INTERNET_CONNECTION } from '../../constants/constants'
+import { isStatusConnected, persistor } from '../../helpers'
 import { resetDashboardState } from '../actions/dashboard'
+import { resetNotification, setConnectionStatus, setLayoutType, setNotification } from '../actions/ui'
 import history from '../router'
 
 function subscribeClientEvents(): EventChannel<AppEvent> {
-  return eventChannel(emit => {
-    bridge?.onReceive((event) => emit(event as any))
+  return eventChannel((emit) => {
+    bridge?.onReceive((event) => emit(event as AppEvent))
     return () => {}
   })
 }
@@ -27,6 +28,12 @@ function* watchClientEvents() {
       case METHODS.cleanCache:
         yield call(handleCleanCache)
         break
+      case METHODS.layoutType:
+        yield put(setLayoutType(event?.payload?.layoutType))
+        break
+      case METHODS.connectionStatus:
+        yield call(handleCheckConnectionStatus, event?.payload?.connectionStatus)
+        break
       default:
         break
     }
@@ -38,16 +45,18 @@ function handleClientBackPressedEvent() {
 }
 
 function* handleCleanCache() {
-  const registrations: ServiceWorkerRegistration[] = yield navigator.serviceWorker.getRegistrations()
-  const unregisterPromises = registrations.map(registration => registration.unregister())
-
-  const allCaches: string[] = yield caches.keys()
-  const cacheDeletionPromises = allCaches.map(cache => caches.delete(cache))
-
-  yield Promise.all([...unregisterPromises, ...cacheDeletionPromises])
-
   yield persistor.purge()
   yield put(resetDashboardState())
+}
+
+export function* handleCheckConnectionStatus(connectionStatus: CONNECTION_STATUS) {
+  yield put(setConnectionStatus(connectionStatus))
+
+  if (isStatusConnected(connectionStatus)) {
+    yield put(resetNotification())
+  } else {
+    yield put(setNotification({ isOpen: true, type: NO_INTERNET_CONNECTION }))
+  }
 }
 
 export function* rootEventsBusSaga() {

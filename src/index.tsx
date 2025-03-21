@@ -4,7 +4,6 @@ import { Provider } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
 import App from './components/App'
 import MainLoader from './components/main-loader/MainLoader'
-import history from './redux/router'
 import { store, persistor } from './helpers'
 import './styles/index.scss'
 
@@ -12,7 +11,7 @@ ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <App history={history} />
+        <App />
         <MainLoader />
       </PersistGate>
     </Provider>

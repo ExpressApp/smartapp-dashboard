@@ -1,0 +1,84 @@
+---
+sidebar_position: 1
+---
+
+import ThemedImage from '@theme/ThemedImage'
+import useBaseUrl from '@docusaurus/useBaseUrl'
+import styles from './styles.module.css'
+
+# Подготовка к запуску SmartApp
+
+Для того, чтобы запустить проект локально в контейнере необходимо:
+
+1. Зайти в меню настройки контейнера.
+
+<div className={styles.centered}>
+  <ThemedImage
+    className={styles.image}
+    alt="settings-button"
+    sources={{ light: useBaseUrl('/settings-button.png'), dark: useBaseUrl('/settings-button-dark.png') }}
+  />
+</div>
+
+2. Установить сбор логов для SmartApp.
+
+<ThemedImage
+  className={styles.image}
+  alt="settings-logs"
+  sources={{ light: useBaseUrl('/settings-logs.png'), dark: useBaseUrl('/settings-logs-dark.png') }}
+/>
+
+3. Настроить параметры для локального запуска SmartApp:
+
+- Bot Huid и Smartapp ID - одинаковые значение. Запросить их необходимо у Backend разработчика, который разворачивал смартапп на Dev стенде. Данные необходимы, чтобы запросы типа "sendBotEvent" идентифицировались и правильно обрабатывались на стороне сервера.
+- SmartApp Url - инпут, куда необходимо прописать host, с которого вы запускаете ваш SmartApp. Также необходимо прописать название платформы, с помощью query параметра в url.
+
+Далее **ОБЯЗАТЕЛЬНО** нажимаем "Установить параметры отладки". Если все введено корректно, у вас не будет ошибок.
+
+<div className={styles.centered}>
+  <ThemedImage
+    className={styles.image}
+    alt="settings-local-smartapp"
+    sources={{ light: useBaseUrl('/settings-local-smartapp.png'), dark: useBaseUrl('/settings-local-smartapp-dark.png') }}
+  />
+</div>
+
+4. Найти бота в списке контактов и написать ему любое сообщение. Он появится в списке ваших чатов. Название необходимо запросить у Backend разработчика, который разворачивал смартапп на Dev стенде.
+
+<div className={styles.centered}>
+  <ThemedImage
+    className={styles.image}
+    alt="searching-smartapp.png"
+    sources={{ light: useBaseUrl('/searching-smartapp.png'), dark: useBaseUrl('/searching-smartapp-dark.png') }}
+  />
+</div>
+
+5. Запустить проект в своем IDE на хосте, который вы прописали в SmartApp Url. Следом нажать на бота в списке чатов, который вы нашли на прошлом шаге. Поздравляем, вы запустили смартапп локально!
+
+<ThemedImage
+  className={styles.image}
+  alt="launched-smartapp.png"
+  sources={{ light: useBaseUrl('/launched-smartapp.png'), dark: useBaseUrl('/launched-smartapp-dark.png') }}
+/>
+
+6. Вы можете скачать логи смартаппа с помощью меню через 3 точки.
+
+<div className={styles.centered}>
+  <ThemedImage
+    className={styles.image}
+    alt="three-points-menu"
+    sources={{ light: useBaseUrl('/three-points-menu.png'), dark: useBaseUrl('/three-points-menu-dark.png') }}
+  />
+</div>
+
+7. Вы можете смотреть логи смартаппа в консоле, давайте разберем их:
+
+- Outgoing Event - шаг, когда запрос уходит от frontend smartApp для дальнейшей обработки в библиотеке Smartapp SDK и передачи данных на платформу;
+- received from smartApp - шаг, где запрос уже обработан с помощью smartApp SDK и получен платформой;
+- sent to botX - шаг, на котором запрос отправляется к botx, а следом к боту (Backend части);
+- sent to smartApp - шаг, на котором платформа получает ответ на запрос и отсылает этот ответ на frontend smartApp;
+- Incoming Event - шаг, где frontend smartApp получает ответ.
+
+<div className={styles.centered}>
+  <ThemedImage className={styles.image} alt="logs" sources={{ light: useBaseUrl('/logs.png'), dark: useBaseUrl('/logs-dark.png') }} />
+</div>

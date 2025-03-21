@@ -18,7 +18,7 @@ const initialState: DashboardState = {
     services: null,
     chats: null,
     contacts: null,
-  }
+  },
 }
 
 const reducers = {
@@ -29,14 +29,15 @@ const reducers = {
     contacts,
   }),
   [SET_FOUND_ITEMS_FOR_DASHBOARD]: (
-    state: DashboardState, { payload: { services, chats, contacts } }: setFoundItemsForDashboardActionType
+    state: DashboardState,
+    { payload: { services, chats, contacts } }: setFoundItemsForDashboardActionType
   ): DashboardState => ({
     ...state,
     searchResults: {
       services,
       chats,
       contacts,
-    }
+    },
   }),
   [RESET_FOUND_ITEMS_FOR_DASHBOARD]: (state: DashboardState): DashboardState => ({
     ...state,
@@ -44,11 +45,9 @@ const reducers = {
       services: null,
       chats: null,
       contacts: null,
-    }
+    },
   }),
-  [UPDATE_ITEMS_ON_DASHBOARD]: (
-    state: DashboardState, { payload: { entity, entityType } }: updateItemsOnDashboardActionType
-  ): DashboardState => ({
+  [UPDATE_ITEMS_ON_DASHBOARD]: (state: DashboardState, { payload: { entity, entityType } }: updateItemsOnDashboardActionType): DashboardState => ({
     ...state,
     [entityType]: [...(state[entityType] || []), entity],
   }),

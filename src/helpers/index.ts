@@ -1,49 +1,73 @@
 import { persistStore } from 'redux-persist'
 import { isEmpty as _isEmpty, isArray, maxBy, isNull } from 'lodash'
-import { ServiceState, ChatState, ContactState } from '../types/reducers'
-import { DashboardItem } from '../types/types'
 import { configureStore } from '../redux/configureStore'
+import { CONNECTION_STATUS, NO_INTERNET_CONNECTION, ORDER_VALUE_FIELD, SECTION_TYPE } from '../constants/constants'
+import { ServiceState, ChatState, ContactState } from '../types/reducers'
+import { DashboardItem, TGenerateNextOrderValue, TIsEmpty, TReorderItems } from '../types/types'
 
-export const getContactUserHuid = (contact: ContactState) => contact.contacts[0].userHuid
+export const isNoInternetConnectionType = (type: string) => type === NO_INTERNET_CONNECTION
+export const isServiceType = (type: string) => type === SECTION_TYPE.services
+export const isChatType = (type: string) => type === SECTION_TYPE.chats
+export const isContactType = (type: string) => type === SECTION_TYPE.contacts
 
-export const getServicesArray = (services: ServiceState[], addedServicesIds: string[] = []): DashboardItem[] => services.map(service => ({
-  ...service,
-  id: service.smartappHuid,
-  isAlreadyAdded: addedServicesIds.includes(service.smartappHuid),
-}))
+export const isStatusConnected = (status: CONNECTION_STATUS) => status === CONNECTION_STATUS.connected
 
-export const getChatsArray = (chats: ChatState[], addedChatsIds: string[] = []): DashboardItem[] => chats.map(chat => ({
-  ...chat,
-  id: chat.groupChatId,
-  isAlreadyAdded: addedChatsIds.includes(chat.groupChatId),
-}))
+// "contacts" array may be empty
+export const generateContactUserHuid = ({ userHuid, contacts }: ContactState) => contacts[0]?.userHuid || userHuid
 
-export const getContactsArray = (contacts: ContactState[], addedContactsIds: string[] = []): DashboardItem[] => contacts.map(contact => ({
-  ...contact,
-  id: getContactUserHuid(contact),
-  user_huid: getContactUserHuid(contact),
-  description: (contact.companyPosition === null || contact.company === null) ? '' : `${contact.companyPosition}, ${contact.company}`,
-  isAlreadyAdded: addedContactsIds.includes(getContactUserHuid(contact)),
-}))
+export const generateServicesArray = (services: ServiceState[], addedServicesIds: string[] = []): DashboardItem[] =>
+  services.map((service) => {
+    const { smartappHuid: id } = service
+    return { ...service, id, isAlreadyAdded: addedServicesIds.includes(id) }
+  })
 
-export const isEmpty = (services: ServiceState[] | null, chats: ChatState[] | null, contacts: ContactState[] | null) => ({
-  isServicesEmpty: isArray(services) && _isEmpty(services),
-  isChatsEmpty: isArray(chats) && _isEmpty(chats),
-  isContactsEmpty: isArray(contacts) && _isEmpty(contacts),
-  isDataEmpty: (isArray(services) && _isEmpty(services)) && (isArray(chats) && _isEmpty(chats)) && (isArray(contacts) && _isEmpty(contacts)),
-  isDataNull: isNull(services) && isNull(chats) && isNull(contacts),
-})
+export const generateChatsArray = (chats: ChatState[], addedChatsIds: string[] = []): DashboardItem[] =>
+  chats.map((chat) => {
+    const { groupChatId: id } = chat
+    return { ...chat, id, isAlreadyAdded: addedChatsIds.includes(id) }
+  })
 
-export const getNextOrderValue = (items: any[]) => {
-  const itemWithMaxOrderValue: any = maxBy(items, 'orderValue')
+export const generateContactsArray = (contacts: ContactState[], addedContactsIds: string[] = []): DashboardItem[] =>
+  contacts.map((contact) => {
+    const { name: contactName, contacts, company, companyPosition } = contact
+    const id = generateContactUserHuid(contact)
+    const description = isNull(companyPosition) || isNull(company) ? '' : `${companyPosition}, ${company}`
+    // "contacts" array may be empty
+    const name = contactName || contacts[0]?.contact
 
-  return itemWithMaxOrderValue ? itemWithMaxOrderValue.orderValue + 1 : 1
+    return { ...contact, id, userHuid: id, name, description, isAlreadyAdded: addedContactsIds.includes(id) }
+  })
+
+export const isEmpty = ({ services, chats, contacts }: TIsEmpty) => {
+  const isServicesEmpty = isArray(services) && _isEmpty(services)
+  const isChatsEmpty = isArray(chats) && _isEmpty(chats)
+  const isContactsEmpty = isArray(contacts) && _isEmpty(contacts)
+
+  return {
+    isServicesEmpty,
+    isChatsEmpty,
+    isContactsEmpty,
+    isDataEmpty: isServicesEmpty && isChatsEmpty && isContactsEmpty,
+    isDataNull: isNull(services) && isNull(chats) && isNull(contacts),
+  }
 }
 
-export const reorderItems = (items: any[], startIndex: number, endIndex: number) => {
+const findMaxOrderValue = (items: (ServiceState | ChatState | ContactState)[]) => maxBy(items, ORDER_VALUE_FIELD)?.orderValue || 0
+
+export const generateNextOrderValue = ({ entityType, services, chats, contacts }: TGenerateNextOrderValue) => {
+  let maxOrderValue = 0
+
+  if (isServiceType(entityType)) maxOrderValue = findMaxOrderValue(services)
+  if (isChatType(entityType)) maxOrderValue = findMaxOrderValue(chats)
+  if (isContactType(entityType)) maxOrderValue = findMaxOrderValue(contacts)
+
+  return maxOrderValue + 1
+}
+
+export const reorderItems = ({ items, startIndex, endIndex }: TReorderItems) => {
   const result = Array.from(items)
 
-  result.forEach((item: any, index: number) => {
+  result.forEach((item, index) => {
     if (startIndex > endIndex && index < startIndex && index >= endIndex) {
       item.orderValue = item.orderValue + 1
     } else if (startIndex < endIndex && index > startIndex && index <= endIndex) {
@@ -51,7 +75,7 @@ export const reorderItems = (items: any[], startIndex: number, endIndex: number)
     }
   })
 
-  const [removed]: any[] = result.splice(startIndex, 1)
+  const [removed] = result.splice(startIndex, 1)
 
   removed.orderValue = endIndex + 1
   result.splice(endIndex, 0, removed)

@@ -1,14 +1,14 @@
 {
   "name": "smartapp-dashboard",
-  "version": "1.0.0",
+  "version": "0.2.0",
   "private": true,
   "dependencies": {
-    "@expressms/smartapp-sdk": "^1.4.0",
-    "@expressms/smartapp-ui": "^1.0.1",
+    "@docusaurus/preset-classic": "^3.7.0",
+    "@expressms/smartapp-sdk": "^1.11.0-alpha.5",
+    "@expressms/smartapp-ui": "2.6.4",
     "@types/classnames": "^2.2.11",
     "@types/lodash": "^4.14.195",
-    "@types/node": "^12.0.0",
-    "@types/react": "^18.2.43",
+    "@types/react": "^19.0.10",
     "@types/react-beautiful-dnd": "^13.1.7",
     "@types/react-dom": "^18.2.17",
     "@types/react-redux": "^7.1.32",
@@ -19,16 +19,20 @@
     "babel-loader": "8.1.0",
     "classnames": "^2.2.6",
     "connected-react-router": "^6.9.3",
+    "crypto-js": "^4.2.0",
     "history": "^5.3.0",
+    "i18next": "^23.16.8",
+    "idb-keyval": "^6.2.1",
     "lodash": "^4.17.21",
+    "prism-react-renderer": "^2.4.1",
     "react": "^18.2.0",
     "react-beautiful-dnd": "^13.1.1",
     "react-dom": "^18.2.0",
+    "react-i18next": "^15.4.1",
     "react-redux": "^9.0.4",
     "react-router-dom": "^6.20.1",
     "react-scripts": "^5.0.1",
     "react-slick": "^0.29.0",
-    "reactjs-popup": "^2.0.5",
     "redux": "^4.2.1",
     "redux-actions": "^3.0.0",
     "redux-devtools-extension": "^2.13.9",
@@ -41,14 +45,10 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-app-rewired build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app"
-    ]
+    "eject": "react-scripts eject",
+    "docsstart": "docusaurus start --port 6006"
   },
   "browserslist": {
     "production": [
@@ -63,6 +63,11 @@
     ]
   },
   "devDependencies": {
+    "@docusaurus/types": "^3.7.0",
+    "@expressms/eslint-config": "^1.0.2",
+    "@expressms/prettier-config": "^1.0.0",
+    "@types/crypto-js": "^4.2.2",
+    "@types/node": "^22.13.4",
     "generate-json-webpack-plugin": "^2.0.0",
     "react-app-rewired": "^2.2.1",
     "zip-webpack-plugin": "^4.0.1"

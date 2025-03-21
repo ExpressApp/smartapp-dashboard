@@ -1,33 +1,30 @@
-import React from 'react'
-import { Header } from '@expressms/smartapp-ui'
+import React, { ReactElement } from 'react'
+import { useSelector } from 'react-redux'
+import { Header as SUIHeader } from '@expressms/smartapp-ui'
 import SyncLoader from '../sync-loader/SyncLoader'
+import { getPlatform } from '../../redux/selectors/ui'
+import { TEXT_SIZE } from '../../constants/constants'
 import './Header.scss'
 
-interface HeaderComponentProps {
+type THeader = {
   title: string
   isBack?: boolean
-  additionalIcons?: React.ReactElement
+  textSize?: TEXT_SIZE
+  additionalIcons?: TAdditionalIcon[]
   onClickBack?: () => void
 }
 
-const HeaderComponent = ({ title, isBack = false, additionalIcons, onClickBack }: HeaderComponentProps) => {
-  if (additionalIcons) {
-    return (
-      <div>
-        <div className="header">
-          <div className="header__title">
-            {title}
-          </div>
-          <div className="header__additional-icons">
-            {additionalIcons}
-          </div>
-        </div>
-        <SyncLoader />
-      </div>
-    )
-  }
+type TAdditionalIcon = { icon: ReactElement; onClick: () => void }
 
-  return <Header title={title} isBack={isBack} onClickBack={onClickBack} />
+const Header = ({ title, isBack = false, textSize, additionalIcons, onClickBack }: THeader) => {
+  const platform = useSelector(getPlatform)
+
+  return (
+    <div>
+      <SUIHeader platform={platform} isBack={isBack} textSize={textSize} title={title} customIcon={additionalIcons} onClickBack={onClickBack} />
+      <SyncLoader />
+    </div>
+  )
 }
 
-export default HeaderComponent
+export default Header

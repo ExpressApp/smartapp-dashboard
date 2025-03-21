@@ -1,65 +1,68 @@
 import React, { useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
-import { ReactComponent as Drag } from '../../../assets/icons/drag.svg'
-import { ReactComponent as Remove } from '../../../assets/icons/remove.svg'
+import { useDispatch, useSelector } from 'react-redux'
+import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd'
+import classNames from 'classnames'
 import Avatar from '../../avatar/Avatar'
 import { changeDashboardItemsOrder, removeItemFromDashboard } from '../../../redux/actions/dashboard'
+import { getIsDisconnectedStatus } from '../../../redux/selectors/ui'
+import { reorderItems } from '../../../helpers'
 import { AVATAR_SIZE } from '../../../constants/constants'
 import { DashboardItem } from '../../../types/types'
-import { reorderItems } from '../../../helpers'
+import { ReactComponent as DragIcon } from '../../../assets/icons/drag.svg'
+import { ReactComponent as RemoveIcon } from '../../../assets/icons/remove.svg'
 import './ResultsList.scss'
 
-interface ResultsListProps {
-  type: string
+type TResultsList = {
+  entityType: string
   initialItems: DashboardItem[]
 }
 
-const ResultsList = ({ type, initialItems }: ResultsListProps) => {
+const ResultsList = ({ entityType, initialItems }: TResultsList) => {
   const [items, setItems] = useState(initialItems)
   const dispatch = useDispatch()
+  const isDisconnectedStatus = useSelector(getIsDisconnectedStatus)
 
-  const handleRemoveItem = (item: DashboardItem) => {
-    setItems((prevItems) => prevItems.filter(({ id }) => id !== item.id))
-    dispatch(removeItemFromDashboard({ entityId: item.id, entityType: type }))
+  const handleRemoveItem = (entityId: string) => {
+    if (isDisconnectedStatus) return
+    setItems((prevItems) => prevItems.filter(({ id }) => id !== entityId))
+    dispatch(removeItemFromDashboard({ entityId, entityType }))
   }
 
-  const handleOnDragEnd = (result: any) => {
-    if (!result.destination) {
-      return
-    }
+  const handleOnDragEnd = ({ source: { index: startIndex }, destination }: DropResult) => {
+    if (!destination) return
 
-    const updatedItems = reorderItems(items, result.source.index, result.destination.index)
+    const { index: endIndex } = destination
+    const entities = reorderItems({ items, startIndex, endIndex })
 
-    setItems(updatedItems)
-    dispatch(changeDashboardItemsOrder({ entityType: type, entities: updatedItems }))
+    setItems(entities)
+    dispatch(changeDashboardItemsOrder({ entityType, entities }))
   }
 
   return (
     <DragDropContext onDragEnd={handleOnDragEnd}>
-      <Droppable droppableId={type}>
-        {(provided) => (
-          <div {...provided.droppableProps} ref={provided.innerRef} className="drag-drop-results-list">
-            {items.map((item, index: number) => (
-              <Draggable key={item.id} draggableId={item.id} index={index}>
-                {(provided) => (
+      <Droppable droppableId={entityType} isDropDisabled={isDisconnectedStatus}>
+        {({ droppableProps, innerRef: droppableInnerRef, placeholder }) => (
+          <div {...droppableProps} ref={droppableInnerRef} className="drag-drop-results-list">
+            {items.map(({ id, name, avatar }, index) => (
+              <Draggable key={id} draggableId={id} index={index} isDragDisabled={isDisconnectedStatus}>
+                {({ draggableProps, dragHandleProps, innerRef: draggableInnerRef }) => (
                   <div
-                    {...provided.draggableProps}
-                    {...provided.dragHandleProps}
-                    ref={provided.innerRef}
-                    className="drag-drop-results-list__item"
+                    {...draggableProps}
+                    {...dragHandleProps}
+                    ref={draggableInnerRef}
+                    className={classNames('drag-drop-results-list__item', { 'drag-drop-results-list__item--disabled': isDisconnectedStatus })}
                   >
                     <div>
-                      <Drag />
-                      <Avatar avatarSrc={item.avatar} itemType={type} itemName={item.name} size={AVATAR_SIZE.small} />
-                      <div>{item.name}</div>
+                      <DragIcon />
+                      <Avatar avatarSrc={avatar} itemType={entityType} itemName={name} size={AVATAR_SIZE.small} />
+                      <div className="drag-drop-results-list__item--name">{name}</div>
                     </div>
-                    <Remove onClick={() => handleRemoveItem(item)} />
+                    <RemoveIcon onClick={() => handleRemoveItem(id)} />
                   </div>
                 )}
               </Draggable>
             ))}
-            {provided.placeholder}
+            {placeholder}
           </div>
         )}
       </Droppable>

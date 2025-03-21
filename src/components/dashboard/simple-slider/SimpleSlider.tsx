@@ -1,45 +1,64 @@
-import React from 'react'
-import Slider from 'react-slick'
-import { useDispatch } from 'react-redux'
+import React, { useState } from 'react'
+import Slider, { Settings } from 'react-slick'
+import { useDispatch, useSelector } from 'react-redux'
+import classNames from 'classnames'
 import Avatar from '../../avatar/Avatar'
 import { openSmartApp } from '../../../redux/actions/dashboard'
+import { getIsDisconnectedStatus, getLayoutType } from '../../../redux/selectors/ui'
+import { SECTION_TYPE, LAYOUT_TYPES } from '../../../constants/constants'
 import { DashboardItem } from '../../../types/types'
-import { SLIDES_TO_SHOW_EXPANDED, SLIDES_TO_SHOW_COLLAPSED, SECTION_TYPE } from '../../../constants/constants'
 import './SimpleSlider.scss'
 
-interface SimpleSliderProps {
+type TSimpleSlider = {
   items: DashboardItem[]
 }
 
-const SimpleSlider = ({ items }: SimpleSliderProps) => {
+const MAX_SLIDES_TO_SHOW = {
+  [LAYOUT_TYPES.minimal]: 3,
+  [LAYOUT_TYPES.half]: 6,
+  [LAYOUT_TYPES.full]: 9,
+}
+
+const SimpleSlider = ({ items }: TSimpleSlider) => {
   const dispatch = useDispatch()
 
-  const sliderSettings = {
+  const isDisconnectedStatus = useSelector(getIsDisconnectedStatus)
+  const layoutType = useSelector(getLayoutType)
+
+  const numberOfItems = items.length
+
+  const [mouseDownClientX, setMouseDownClientX] = useState<number | null>(null)
+  const [mouseDownClientY, setMouseDownClientY] = useState<number | null>(null)
+
+  const generateSlidesToShow = (maxSlidesToShow: number) => (numberOfItems > maxSlidesToShow ? maxSlidesToShow : numberOfItems)
+
+  const sliderSettings: Settings = {
     arrows: false,
     dots: true,
     speed: 500,
-    responsive: [
-      {
-        breakpoint: 2048,
-        settings: {
-          slidesToShow: items.length > SLIDES_TO_SHOW_EXPANDED ? SLIDES_TO_SHOW_EXPANDED : items.length,
-          slidesToScroll: 6,
-        }
-      },
-      {
-        breakpoint: 400,
-        settings: {
-          slidesToShow: items.length > SLIDES_TO_SHOW_COLLAPSED ? SLIDES_TO_SHOW_COLLAPSED : items.length,
-          slidesToScroll: 3,
-        }
-      },
-    ]
+    slidesToShow: generateSlidesToShow(MAX_SLIDES_TO_SHOW[layoutType]),
+    slidesToScroll: MAX_SLIDES_TO_SHOW[layoutType],
+  }
+
+  const handleMouseDown = ({ clientX, clientY }: React.MouseEvent<HTMLDivElement>) => {
+    setMouseDownClientX(clientX)
+    setMouseDownClientY(clientY)
+  }
+
+  const handleOpenSmartApp = ({ clientX, clientY }: React.MouseEvent<HTMLDivElement>, appId?: string) => {
+    if (mouseDownClientX !== clientX || mouseDownClientY !== clientY || !appId || isDisconnectedStatus) return
+    dispatch(openSmartApp(appId))
   }
 
   return (
-    <Slider {...sliderSettings} className="slider simple-slider">
+    <Slider {...sliderSettings} className={classNames('slider', 'simple-slider')}>
       {items.map(({ id, appId, name, avatar }) => (
-        <div key={id} className="simple-slider__item" onClick={() => dispatch(openSmartApp(appId as string))}>
+        <div
+          key={id}
+          className={classNames('simple-slider__item', { 'simple-slider__item--disabled': isDisconnectedStatus })}
+          onMouseDown={handleMouseDown}
+          onClick={(event) => handleOpenSmartApp(event, appId)}
+        >
           <Avatar avatarSrc={avatar} itemType={SECTION_TYPE.services} />
           <h5>{name}</h5>
         </div>

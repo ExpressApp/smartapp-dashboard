@@ -1,0 +1,141 @@
+---
+sidebar_position: 7
+---
+
+import Tabs from '@theme/Tabs'
+import TabItem from '@theme/TabItem'
+import ThemedImage from '@theme/ThemedImage'
+import useBaseUrl from '@docusaurus/useBaseUrl'
+import styles from './styles.module.css'
+
+# Интернационализация
+
+Для выбора языка SmartApp Frontend используется параметр locale, передаваемый при запуске SmartApp через query-параметры. Значение параметра состоит из двух символов, определяющих локаль, установленную на клиенте "eXpress", например en.
+
+Для указания локали в процессе локальной разработки, необходимо открыть [веб-клиент "eXpress"](https://web-dev.ccsteam.ru/#/), кликнуть на иконку "настроек" и перейти в раздел "SmartApps".
+
+<div className={styles.centered}>
+  <ThemedImage alt="smartapps-locale" sources={{ light: useBaseUrl('/smartapps-locale.gif'), dark: useBaseUrl('/smartapps-locale-dark.gif') }} />
+</div>
+
+В поле "SmartApp Url" нужно ввести адрес (например, для локального запуска SmartApp frontend это может быть http://localhost:3000) и добавить параметры platform=web и locale=en.
+
+<div className={styles.centered}>
+  <ThemedImage
+    className={styles.image}
+    alt="web-dev"
+    sources={{ light: useBaseUrl('/web-dev-locale.png'), dark: useBaseUrl('/web-dev-locale-dark.png') }}
+  />
+</div>
+
+Для обеспечения интернационализации проекта, первым шагом следует установить библиотеки i18next и react-i18next.
+
+```
+yarn add i18next react-i18next
+```
+
+Затем нужно создать файл index.ts для настройки конфигурации i18next.
+
+```typescript title="src/core/i18n/index.ts"
+import i18n from 'i18next'
+import { initReactI18next } from 'react-i18next'
+import { localeResources } from './locales'
+
+export const APP_LANGUAGES = {
+  ru: 'ru',
+  en: 'en',
+}
+
+i18n.use(initReactI18next).init({
+  fallbackLng: APP_LANGUAGES.ru,
+  returnNull: false,
+  resources: localeResources,
+})
+
+export type APP_LANGUAGES_TYPE = keyof typeof APP_LANGUAGES
+export const changeLanguage = (lang: APP_LANGUAGES_TYPE) => i18n.changeLanguage(lang)
+export default i18n
+```
+
+После этого необходимо добавить переводы для поддерживаемых языков. Каждый файл с переводами представляет собой JSON-файл, содержащий пары ключ : значение, где ключ - это идентификатор перевода, а значение - сам перевод.
+
+<Tabs>
+  <TabItem value="en" label="English">
+    <div>
+      ```json title="src/core/i18n/locales/en/en.json"
+      {
+        "myDashboard": "Personal Dashboard",
+        "addToDashboard": "Add to Dashboard",
+        "dashboardIsEmpty": "Your dashboard is empty",
+        "goToAdd": "Add the Entity",
+        "noResultsFound": "Sorry, we couldn't find any results.",
+      }
+      ```
+    </div>
+  </TabItem>
+  <TabItem value="ru" label="Russian">
+    <div>
+      ```json title="src/core/i18n/locales/ru/ru.json"
+      {
+        "myDashboard": "Личный дашборд",
+        "addToDashboard": "Добавить на дашборд",
+        "dashboardIsEmpty": "Ваш дашборд пуст",
+        "goToAdd": "Перейти к добавлению",
+        "noResultsFound": "Поиск не дал результатов.",
+      }
+      ```
+    </div>
+  </TabItem>
+</Tabs>
+
+Для использования переводов в компонентах следует использовать хук useTranslation.
+
+```javascript
+import React from 'react'
+import { useTranslation } from 'react-i18next'
+import { languageKeys } from '../../core/i18n/locales'
+import './NoResultsFound.scss'
+
+const { noResultsFound, fixRequestAndTryAgain } = languageKeys
+
+const NoResultsFound = () => {
+  const { t } = useTranslation()
+
+  return (
+    <div className="no-results">
+      <div>{t(noResultsFound)}</div>
+      <div>{t(fixRequestAndTryAgain)}</div>
+    </div>
+  )
+}
+
+export default NoResultsFound
+```
+
+Ниже приведен пример интерфейса, когда нет результатов, соответствующих поисковому запросу, на русском и английском языках.
+
+<Tabs>
+  <TabItem value="ru" label="RU Locale">
+    <div className={styles.centered}>
+      <ThemedImage className={styles.image} alt="ru" sources={{ light: useBaseUrl('/no-results.png'), dark: useBaseUrl('/no-results-dark.png') }} />
+    </div>
+  </TabItem>
+  <TabItem value="en" label="EN Locale">
+    <div className={styles.centered}>
+      <ThemedImage
+        className={styles.image}
+        alt="en"
+        sources={{ light: useBaseUrl('/no-results-en.png'), dark: useBaseUrl('/no-results-en-dark.png') }}
+      />
+    </div>
+  </TabItem>
+</Tabs>
+
+Для смены языка необходмо использовать функцию changeLanguage, а для получения текущей локали из query-параметров можно воспользоваться хуком useQuery.
+
+```typescript
+import { useQuery } from '@expressms/smartapp-sdk'
+
+const { locale } = useQuery()
+changeLanguage((locale || APP_LANGUAGES.ru) as APP_LANGUAGES_TYPE)
+```

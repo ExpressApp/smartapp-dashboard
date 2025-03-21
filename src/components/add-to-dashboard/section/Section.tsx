@@ -1,12 +1,12 @@
 import React from 'react'
 import ResultsList from '../results-list/ResultsList'
-import { SectionProps } from '../../../types/types'
+import { TSection } from '../../../types/types'
 import './Section.scss'
 
-const Section = ({ name, type, items }: SectionProps) => (
+const Section = ({ name, type, items }: TSection) => (
   <div className="add-section">
     <div className="add-section__title">{name}</div>
-    <ResultsList type={type} items={items} />
+    <ResultsList entityType={type} items={items} />
   </div>
 )
 

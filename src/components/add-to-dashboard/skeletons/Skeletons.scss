@@ -1,0 +1,53 @@
+@import '../../../constants/constants';
+
+.skeletons {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 0 16px;
+
+    &--title {
+      width: 25%;
+    }
+
+    &--items {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border-radius: 8px;
+      background: var(--color-item);
+      box-shadow: 0 4px 17px 0 $color-grey-transparent-7;
+      padding: 8px 16px;
+
+      &__item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 0;
+
+        & > div:last-child {
+          width: 100%;
+        }
+
+        &:has(.skeletons__section--items__item--info) {
+          align-items: flex-start;
+        }
+
+        &--info {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+
+          & > div:first-child {
+            width: 50%;
+          }
+        }
+      }
+    }
+  }
+}

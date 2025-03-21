@@ -1,23 +1,19 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
-import { ReactComponent as Loader } from '../../assets/icons/loader.svg'
-import { getSyncLoader } from '../../redux/selectors/ui'
-import { ApplicationState } from '../../types/reducers'
+import { useTranslation } from 'react-i18next'
+import { SyncLoader as SUISyncLoader } from '@expressms/smartapp-ui'
+import { getSyncLoader, getTheme } from '../../redux/selectors/ui'
+import { languageKeys } from '../../core/i18n/locales'
 import './SyncLoader.scss'
 
+const { syncText } = languageKeys
+
 const SyncLoader = () => {
-  const syncLoader = useSelector<ApplicationState, boolean>(getSyncLoader)
+  const { t } = useTranslation()
+  const syncLoader = useSelector(getSyncLoader)
+  const theme = useSelector(getTheme)
 
-  if (!syncLoader) {
-    return null
-  }
-
-  return (
-    <div className="sync-loader">
-      <Loader className="sync-loader__icon" />
-      <div className="sync-loader__text">Обновление</div>
-    </div>
-  )
+  return <SUISyncLoader isLoading={syncLoader} theme={theme} text={t(syncText)} />
 }
 
 export default SyncLoader

@@ -1,14 +1,15 @@
 import React from 'react'
+import classNames from 'classnames'
 import SimpleSlider from '../simple-slider/SimpleSlider'
 import RowsSlider from '../rows-slider/RowsSlider'
-import { SECTION_TYPE } from '../../../constants/constants'
-import { SectionProps } from '../../../types/types'
+import { isServiceType } from '../../../helpers'
+import { TSection } from '../../../types/types'
 import './Section.scss'
 
-const Section = ({ name, type, items }: SectionProps) => (
-  <div className="dashboard-section">
+const Section = ({ name, type, items }: TSection) => (
+  <div className={classNames('dashboard-section', `dashboard-section__${type}`)}>
     <div className="dashboard-section__title">{name}</div>
-    {type === SECTION_TYPE.services ? <SimpleSlider items={items} /> : <RowsSlider type={type} items={items} />}
+    {isServiceType(type) ? <SimpleSlider items={items} /> : <RowsSlider type={type} items={items} />}
   </div>
 )
 

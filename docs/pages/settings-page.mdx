@@ -1,0 +1,38 @@
+---
+title: Настройки
+sidebar_position: 3
+---
+
+import ThemedImage from '@theme/ThemedImage'
+import useBaseUrl from '@docusaurus/useBaseUrl'
+import styles from '../styles.module.css'
+
+На странице настроек отображаются сервисы, чаты и контакты, закрепленные пользователем. Рядом с названием каждой секции указано количество закрепленных элементов, а также максимальное количество, которое можно добавить в эту секцию. Если в секции нет элементов, рядом с ее названием будет указано 0/9.
+
+<div className={styles.centered}>
+  <ThemedImage className={styles.image} alt="settings" sources={{ light: useBaseUrl('/settings.png'), dark: useBaseUrl('/settings-dark.png') }} />
+</div>
+
+Пользователь может удалить закрепленный сервис, чат или контакт, кликнув на иконку минуса.
+
+Кроме того, пользователь может изменить порядок отображения элементов, который будет использован на главной странице. Изменение порядка осуществляется с помощью drag-and-drop, реализованного с использованием библиотеки [react-beautiful-dnd](https://www.npmjs.com/package/react-beautiful-dnd).
+
+<div className={styles.centered}>
+  <ThemedImage alt="settings" sources={{ light: useBaseUrl('/drag-and-drop.gif'), dark: useBaseUrl('/drag-and-drop-dark.gif') }} />
+</div>
+
+:::warning
+
+На момент написания документации [react-beautiful-dnd](https://www.npmjs.com/package/react-beautiful-dnd) библиотека устарела. Рекомендуем использовать [react-dnd](https://react-dnd.github.io/react-dnd/about) библиотеку для реализации drag-and-drop.
+
+:::
+
+Если пользователь впервые заходит в Dashboard SmartApp или удалил все закрепленные элементы, ему будет показана кнопка для перехода на страницу добавления сущностей.
+
+<div className={styles.centered}>
+  <ThemedImage
+    className={styles.plug}
+    alt="empty-settings"
+    sources={{ light: useBaseUrl('/empty-settings.png'), dark: useBaseUrl('/empty-settings-dark.png') }}
+  />
+</div>
